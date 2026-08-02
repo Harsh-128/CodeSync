@@ -3,6 +3,7 @@ const { Server } = require("socket.io");
 const socketHandler = require("./socket/socketHandler");
 
 const express = require("express");
+const cors = require("cors");
 const connectDB = require("./config/db");
 const roomRoutes = require("./routes/roomRoutes");
 
@@ -14,6 +15,8 @@ const PORT = 3000;
 connectDB();
 
 // Middleware
+app.use(cors());
+
 app.use(express.json());
 
 // Home Route

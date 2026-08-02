@@ -23,6 +23,18 @@ module.exports = (io) => {
 
         });
 
+    socket.on("code-change", (data) => {
+
+    socket.to(data.roomId).emit("code-update", data.code);
+
+});
+
+        socket.on("code-change", (data) => {
+
+    socket.to(data.roomId).emit("code-update", data.code);
+
+});
+
         socket.on("disconnect", () => {
 
             console.log("User Disconnected:", socket.id);
