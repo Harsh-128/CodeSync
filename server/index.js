@@ -1,8 +1,13 @@
+const http = require("http");
+const { Server } = require("socket.io");
+const socketHandler = require("./socket/socketHandler");
+
 const express = require("express");
 const connectDB = require("./config/db");
 const roomRoutes = require("./routes/roomRoutes");
 
 const app = express();
+const server = http.createServer(app);
 const PORT = 3000;
 
 // Connect MongoDB
@@ -32,6 +37,14 @@ app.get("/api/health", (req, res) => {
 app.use("/rooms", roomRoutes);
 
 // Start Server
-app.listen(PORT, () => {
+const io = new Server(server, {
+    cors: {
+        origin: "*"
+    }
+});
+
+socketHandler(io);
+
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
