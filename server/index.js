@@ -1,13 +1,15 @@
 const express = require("express");
+const connectDB = require("./config/db");
+const roomRoutes = require("./routes/roomRoutes");
 
 const app = express();
+const PORT = 3000;
 
-const roomRoutes = require("./routes/roomRoutes");
+// Connect MongoDB
+connectDB();
 
 // Middleware
 app.use(express.json());
-
-const PORT = 3000;
 
 // Home Route
 app.get("/", (req, res) => {
@@ -26,20 +28,7 @@ app.get("/api/health", (req, res) => {
     });
 });
 
-// Create Room API
-app.post("/api/create-room", (req, res) => {
-
-    const roomName = req.body.roomName;
-
-    res.json({
-        success: true,
-        message: "Room created successfully",
-        room: roomName
-    });
-
-});
-
-// Connect room routes
+// Room Routes
 app.use("/rooms", roomRoutes);
 
 // Start Server
