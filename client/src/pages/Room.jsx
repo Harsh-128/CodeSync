@@ -1,13 +1,24 @@
-import { useParams } from "react-router-dom";
+import ChatPanel from "../components/ChatPanel";
+import { useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import Editor from "@monaco-editor/react";
+
+import API from "../services/api";
+
+import CodeEditor from "../components/CodeEditor";
+import LanguageSelector from "../components/LanguageSelector";
+import RunButton from "../components/RunButton";
+import OutputPanel from "../components/OutputPanel";
+import UsersPanel from "../components/UsersPanel";
 
 const socket = io("http://localhost:3000");
 
 function Room() {
-
     const { roomId } = useParams();
+    const location = useLocation();
+const username = location.state?.username || "Anonymous";
+
+    const [language, setLanguage] = useState("cpp");
 
     const [code, setCode] = useState(`#include <iostream>
 
@@ -20,58 +31,139 @@ int main() {
     return 0;
 }`);
 
+    const [output, setOutput] = useState("");
+    const [users, setUsers] = useState([]);
+    const [messages, setMessages] = useState([]);
+
     useEffect(() => {
 
-        socket.emit("join-room", roomId);
+    socket.emit("join-room", {
+        roomId,
+        username
+    });
 
-        socket.on("code-update", (newCode) => {
+    socket.on("code-update", (newCode) => {
+        setCode(newCode);
+    });
 
-            setCode(newCode);
+    socket.on("users-update", (usersList) => {
+        setUsers(usersList);
+    });
+    
+    socket.on("receive-message", (message) => {
+    setMessages((prev) => [...prev, message]);
+});
+   
 
-        });
+    return () => {
+        socket.off("code-update");
+        socket.off("users-update");
+         socket.off("receive-message");
+    };
 
-        return () => {
+}, [roomId, username]);
 
-            socket.off("code-update");
+    useEffect(() => {
+        if (language === "cpp") {
+            setCode(`#include <iostream>
 
-        };
+using namespace std;
 
-    }, [roomId]);
+int main() {
+
+    cout << "Welcome to CodeSync!";
+
+    return 0;
+}`);
+        } else if (language === "java") {
+            setCode(`public class Main {
+
+    public static void main(String[] args) {
+
+        System.out.println("Welcome to CodeSync!");
+
+    }
+
+}`);
+        } else if (language === "python") {
+            setCode(`print("Welcome to CodeSync!")`);
+        } else if (language === "javascript") {
+            setCode(`console.log("Welcome to CodeSync!");`);
+        }
+    }, [language]);
 
     const handleEditorChange = (value) => {
-
         setCode(value);
 
         socket.emit("code-change", {
-
             roomId,
-
-            code: value
-
+            code: value,
         });
-
     };
 
+    const runCode = async () => {
+        try {
+            const languageMap = {
+                cpp: 54,
+                java: 62,
+                python: 71,
+                javascript: 63,
+            };
+
+            const res = await API.post("/code/run", {
+                language_id: languageMap[language],
+                source_code: code,
+            });
+
+            setOutput(
+                res.data.stdout ||
+                res.data.compile_output ||
+                res.data.stderr
+            );
+        } catch (error) {
+            console.log(error);
+            setOutput("Error running code.");
+        }
+    };
+
+    const sendMessage = (message) => {
+
+    socket.emit("send-message", {
+        roomId,
+        message
+    });
+
+};
+
     return (
-
         <div style={{ padding: "20px" }}>
-
             <h1>🚀 CodeSync Room</h1>
 
-            <h2>Room ID: {roomId}</h2>
+            <h3>Room ID: {roomId}</h3>
 
-            <Editor
-                height="80vh"
-                language="cpp"
-                theme="vs-dark"
-                value={code}
-                onChange={handleEditorChange}
+            <UsersPanel users={users} />
+
+            <LanguageSelector
+                language={language}
+                setLanguage={setLanguage}
             />
 
+            <RunButton runCode={runCode} />
+
+            <CodeEditor
+                language={language}
+                code={code}
+                onCodeChange={handleEditorChange}
+            />
+
+            <OutputPanel output={output} />
+
+<ChatPanel
+    messages={messages}
+    sendMessage={sendMessage}
+/>
         </div>
-
     );
-
 }
 
 export default Room;

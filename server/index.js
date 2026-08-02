@@ -2,10 +2,13 @@ const http = require("http");
 const { Server } = require("socket.io");
 const socketHandler = require("./socket/socketHandler");
 
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const roomRoutes = require("./routes/roomRoutes");
+const codeRoutes = require("./routes/codeRoutes");
 
 const app = express();
 const server = http.createServer(app);
@@ -38,6 +41,7 @@ app.get("/api/health", (req, res) => {
 
 // Room Routes
 app.use("/rooms", roomRoutes);
+app.use("/code", codeRoutes);
 
 // Start Server
 const io = new Server(server, {
