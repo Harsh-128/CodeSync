@@ -2,14 +2,12 @@
   <img src="assets/banner.png" alt="CodeSync Banner" width="100%">
 </div>
 
-<div align="center">
-
-![GitHub Repo stars](https://img.shields.io/github/stars/Harsh-128/CodeSync?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/Harsh-128/CodeSync?style=for-the-badge)
-![GitHub issues](https://img.shields.io/github/issues/Harsh-128/CodeSync?style=for-the-badge)
-![GitHub last commit](https://img.shields.io/github/last-commit/Harsh-128/CodeSync?style=for-the-badge)
-
-</div
+<p align="center">
+  <img src="https://img.shields.io/github/stars/Harsh-128/CodeSync?style=for-the-badge" />
+  <img src="https://img.shields.io/github/forks/Harsh-128/CodeSync?style=for-the-badge" />
+  <img src="https://img.shields.io/github/issues/Harsh-128/CodeSync?style=for-the-badge" />
+  <img src="https://img.shields.io/github/last-commit/Harsh-128/CodeSync?style=for-the-badge" />
+</p>
 
 ## 🚀 About CodeSync
 
