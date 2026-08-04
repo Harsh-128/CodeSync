@@ -1,4 +1,22 @@
+<p align="center">
+  <img src="assets/banner.png" alt="CodeSync Banner" width="100%">
+</p>
+
+<div align="center">
+
 # 🚀 CodeSync
+
+### Real-Time Collaborative Code Editor
+
+Write code together.
+Chat together.
+Compile together.
+
+Built using **React • Node.js • Express • Socket.IO • MongoDB**
+
+</div>
+
+---
 
 <div align="center">
 
@@ -134,15 +152,23 @@ npm start
 
 ---
 
-## 📸 Screenshots
+## 📸 Project Screenshots
 
-Add screenshots of:
+### 🏠 Home Page
 
-- Home Page
-- Login/Register
-- Room Page
-- Code Editor
-- Chat Section
+<img src="screenshots/home.png" width="900">
+
+---
+
+### 🚪 Create / Join Room
+
+<img src="screenshots/room.png" width="900">
+
+---
+
+### 💬 Live Chat
+
+<img src="screenshots/chat.png" width="900">
 
 ---
 
