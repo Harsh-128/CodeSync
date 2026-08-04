@@ -13,7 +13,7 @@
 
 ## 🚀 About CodeSync
 
-A modern real-time collaborative code editor where developers can create rooms, write code together, chat instantly, and execute code in real time.
+CodeSync is a full-stack real-time collaborative code editor that enables multiple developers to create secure rooms, write code together, communicate through live chat, and execute code from a shared workspace. It demonstrates real-time communication using Socket.IO and follows the MERN stack architecture.
 
 Built using **React, Node.js, Express, Socket.IO and MongoDB**.
 
@@ -54,29 +54,16 @@ Built using **React, Node.js, Express, Socket.IO and MongoDB**.
 
 ---
 
-## 🛠 Tech Stack
+## 🛠️ Tech Stack
 
-### Frontend
-- React.js
-- JavaScript
-- HTML5
-- CSS3
-- Axios
-
-### Backend
-- Node.js
-- Express.js
-- Socket.IO
-
-### Database
-- MongoDB
-
-### Authentication
-- JWT (JSON Web Token)
-
-### Version Control
-- Git
-- GitHub
+| Category | Technologies |
+|----------|--------------|
+| Frontend | React, Vite, HTML, CSS, JavaScript |
+| Backend | Node.js, Express.js |
+| Database | MongoDB |
+| Real-Time | Socket.IO |
+| Authentication | JWT |
+| Version Control | Git, GitHub |
 
 ---
 
