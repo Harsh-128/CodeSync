@@ -1,18 +1,21 @@
-<p align="center">
+<div align="center">
   <img src="assets/banner.png" alt="CodeSync Banner" width="100%">
-</p>
+</div>
 
 <div align="center">
 
-# 🚀 CodeSync
+![GitHub Repo stars](https://img.shields.io/github/stars/Harsh-128/CodeSync?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/Harsh-128/CodeSync?style=for-the-badge)
+![GitHub issues](https://img.shields.io/github/issues/Harsh-128/CodeSync?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/Harsh-128/CodeSync?style=for-the-badge)
 
-### Real-Time Collaborative Code Editor
+</div
 
-Write code together.
-Chat together.
-Compile together.
+## 🚀 About CodeSync
 
-Built using **React • Node.js • Express • Socket.IO • MongoDB**
+A modern real-time collaborative code editor where developers can create rooms, write code together, chat instantly, and execute code in real time.
+
+Built using **React, Node.js, Express, Socket.IO and MongoDB**.
 
 </div>
 
