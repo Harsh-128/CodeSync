@@ -3,7 +3,7 @@ import Editor from "@monaco-editor/react";
 function CodeEditor({ language, code, onCodeChange }) {
     return (
         <Editor
-            height="80vh"
+            height="100%"
             language={language}
             theme="vs-dark"
             value={code}

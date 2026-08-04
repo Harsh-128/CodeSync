@@ -2,6 +2,8 @@ import ChatPanel from "../components/ChatPanel";
 import { useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import "../styles/room.css";
+import Navbar from "../components/Navbar";
 
 import API from "../services/api";
 
@@ -135,35 +137,60 @@ int main() {
 
 };
 
-    return (
-        <div style={{ padding: "20px" }}>
-            <h1>🚀 CodeSync Room</h1>
+return (
+    <div className="room-container">
 
-            <h3>Room ID: {roomId}</h3>
+        <Navbar roomId={roomId} />
 
-            <UsersPanel users={users} />
+        <div className="main-content">
 
-            <LanguageSelector
-                language={language}
-                setLanguage={setLanguage}
-            />
+            <div className="left-panel">
+                <UsersPanel users={users} />
+            </div>
 
-            <RunButton runCode={runCode} />
+            <div className="center-panel">
 
-            <CodeEditor
-                language={language}
-                code={code}
-                onCodeChange={handleEditorChange}
-            />
+                <div className="top-controls">
 
-            <OutputPanel output={output} />
+                    <LanguageSelector
+                        language={language}
+                        setLanguage={setLanguage}
+                    />
 
-<ChatPanel
-    messages={messages}
-    sendMessage={sendMessage}
-/>
+                    <RunButton runCode={runCode} />
+
+                </div>
+
+                <div className="editor-container">
+
+                    <CodeEditor
+                        language={language}
+                        code={code}
+                        onCodeChange={handleEditorChange}
+                    />
+
+                </div>
+
+                <div className="output-container">
+                    <OutputPanel output={output} />
+                </div>
+
+            </div>
+
+            <div className="right-panel">
+
+                <ChatPanel
+                    messages={messages}
+                    sendMessage={sendMessage}
+                />
+
+            </div>
+
         </div>
-    );
+
+    </div>
+);
+
 }
 
 export default Room;

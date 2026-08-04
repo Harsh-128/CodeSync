@@ -3,11 +3,22 @@ function RunButton({ runCode }) {
         <button
             onClick={runCode}
             style={{
-                marginBottom: "15px",
-                padding: "10px 20px",
+                padding: "12px 28px",
+                background: "#3B82F6",
+                color: "white",
+                border: "none",
+                borderRadius: "10px",
+                fontWeight: "bold",
+                fontSize: "16px",
                 cursor: "pointer",
-                fontSize: "16px"
+                transition: "0.2s"
             }}
+            onMouseOver={(e) =>
+                (e.target.style.background = "#2563EB")
+            }
+            onMouseOut={(e) =>
+                (e.target.style.background = "#3B82F6")
+            }
         >
             ▶ Run Code
         </button>

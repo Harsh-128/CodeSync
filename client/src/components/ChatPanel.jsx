@@ -13,27 +13,71 @@ function ChatPanel({ messages, sendMessage }) {
     return (
         <div
             style={{
-                width: "300px",
                 background: "#252526",
+                borderRadius: "12px",
+                padding: "20px",
                 color: "white",
-                padding: "15px",
-                borderRadius: "8px"
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                boxShadow: "0 8px 20px rgba(0,0,0,0.35)"
             }}
         >
-            <h3>💬 Chat</h3>
+            <h2
+                style={{
+                    textAlign: "center",
+                    marginTop: 0,
+                    marginBottom: "20px"
+                }}
+            >
+                💬 Chat
+            </h2>
 
             <div
                 style={{
-                    height: "300px",
+                    flex: 1,
                     overflowY: "auto",
-                    marginBottom: "10px"
+                    marginBottom: "15px"
                 }}
             >
-                {messages.map((msg, index) => (
-                    <p key={index}>
-                        <strong>{msg.sender}</strong>: {msg.message}
+                {messages.length === 0 ? (
+                    <p
+                        style={{
+                            textAlign: "center",
+                            color: "#888"
+                        }}
+                    >
+                        No messages yet
                     </p>
-                ))}
+                ) : (
+                    messages.map((msg, index) => (
+                        <div
+                            key={index}
+                            style={{
+                                background: "#323233",
+                                padding: "10px",
+                                borderRadius: "10px",
+                                marginBottom: "10px"
+                            }}
+                        >
+                            <strong
+                                style={{
+                                    color: "#4CAF50"
+                                }}
+                            >
+                                {msg.sender}
+                            </strong>
+
+                            <p
+                                style={{
+                                    margin: "5px 0 0"
+                                }}
+                            >
+                                {msg.message}
+                            </p>
+                        </div>
+                    ))
+                )}
             </div>
 
             <input
@@ -41,15 +85,23 @@ function ChatPanel({ messages, sendMessage }) {
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Type a message..."
                 style={{
-                    width: "100%",
-                    padding: "8px"
+                    padding: "12px",
+                    borderRadius: "8px",
+                    border: "none",
+                    marginBottom: "10px"
                 }}
             />
 
             <button
                 onClick={handleSend}
                 style={{
-                    marginTop: "10px"
+                    padding: "12px",
+                    border: "none",
+                    borderRadius: "8px",
+                    background: "#4CAF50",
+                    color: "white",
+                    cursor: "pointer",
+                    fontWeight: "bold"
                 }}
             >
                 Send
