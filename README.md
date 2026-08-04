@@ -3,10 +3,10 @@
 </div>
 
 <p align="center">
-  <img src="https://img.shields.io/github/stars/Harsh-128/CodeSync?style=for-the-badge" />
-  <img src="https://img.shields.io/github/forks/Harsh-128/CodeSync?style=for-the-badge" />
-  <img src="https://img.shields.io/github/issues/Harsh-128/CodeSync?style=for-the-badge" />
-  <img src="https://img.shields.io/github/last-commit/Harsh-128/CodeSync?style=for-the-badge" />
+  <img src="https://img.shields.io/github/stars/Harsh-128/CodeSync?style=for-the-badge" alt="Stars"/>
+  <img src="https://img.shields.io/github/forks/Harsh-128/CodeSync?style=for-the-badge" alt="Forks"/>
+  <img src="https://img.shields.io/github/issues/Harsh-128/CodeSync?style=for-the-badge" alt="Issues"/>
+  <img src="https://img.shields.io/github/last-commit/Harsh-128/CodeSync?style=for-the-badge" alt="Last Commit"/>
 </p>
 
 ## 🚀 About CodeSync
