@@ -7,6 +7,7 @@ import Navbar from "../components/Navbar";
 import ThemeSelector from "../components/ThemeSelector";
 import API from "../services/api";
 import InputPanel from "../components/InputPanel";
+import ExecutionHistory from "../components/ExecutionHistory";
 
 import CodeEditor from "../components/CodeEditor";
 import LanguageSelector from "../components/LanguageSelector";
@@ -40,11 +41,48 @@ int main() {
 }`);
 
     const [output, setOutput] = useState("");
+    const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(false);
     const [input, setInput] = useState("");
 
     const [users, setUsers] = useState([]);
     const [messages, setMessages] = useState([]);
+    const getDefaultCode = (lang) => {
+    switch (lang) {
+        case "cpp":
+            return `#include <iostream>
+
+using namespace std;
+
+int main() {
+
+    cout << "Welcome to CodeSync!";
+
+    return 0;
+}`;
+
+        case "java":
+            return `public class Main {
+
+    public static void main(String[] args) {
+
+        System.out.println("Welcome to CodeSync!");
+
+    }
+
+}`;
+
+        case "python":
+            return `print("Welcome to CodeSync!")`;
+
+        case "javascript":
+            return `console.log("Welcome to CodeSync!");`;
+
+        default:
+            return "";
+    }
+};
+   
 
     useEffect(() => {
 
@@ -53,9 +91,16 @@ int main() {
         username
     });
 
-    socket.on("code-update", (newCode) => {
-        setCode(newCode);
-    });
+   socket.on("code-update", (newCode) => {
+
+    setCode(newCode);
+
+    localStorage.setItem(
+    `code-${roomId}-${language}`,
+    newCode
+);
+
+});
 
     socket.on("users-update", (usersList) => {
         setUsers(usersList);
@@ -75,42 +120,41 @@ int main() {
 }, [roomId, username]);
 
     useEffect(() => {
-        if (language === "cpp") {
-            setCode(`#include <iostream>
 
-using namespace std;
+    const savedCode = localStorage.getItem(
+        `code-${roomId}-${language}`
+    );
 
-int main() {
-
-    cout << "Welcome to CodeSync!";
-
-    return 0;
-}`);
-        } else if (language === "java") {
-            setCode(`public class Main {
-
-    public static void main(String[] args) {
-
-        System.out.println("Welcome to CodeSync!");
-
+    if (savedCode) {
+        setCode(savedCode);
+    } else {
+        setCode(getDefaultCode(language));
     }
 
-}`);
-        } else if (language === "python") {
-            setCode(`print("Welcome to CodeSync!")`);
-        } else if (language === "javascript") {
-            setCode(`console.log("Welcome to CodeSync!");`);
-        }
-    }, [language]);
+}, [language, roomId]);
+
+useEffect(() => {
+    const savedHistory =
+        JSON.parse(localStorage.getItem(`history-${roomId}`)) || [];
+
+    setHistory(savedHistory);
+}, [roomId]);
 
     const handleEditorChange = (value) => {
-        setCode(value);
 
-        socket.emit("code-change", {
-            roomId,
-            code: value,
-        });
-    };
+    setCode(value);
+
+   localStorage.setItem(
+    `code-${roomId}-${language}`,
+    value
+);
+
+    socket.emit("code-change", {
+        roomId,
+        code: value,
+    });
+
+};
 
     const runCode = async () => {
         setLoading(true);
@@ -129,18 +173,47 @@ int main() {
     stdin: input,
 });
 
-            setOutput(
-                res.data.stdout ||
-                res.data.compile_output ||
-                res.data.stderr
-            );
+            const result =
+    res.data.stdout ||
+    res.data.compile_output ||
+    res.data.stderr;
+
+setOutput(result);
+
+const newExecution = {
+    language,
+    code,
+    input,
+    output: result,
+    time: new Date().toLocaleString(),
+};
+
+const updatedHistory = [
+    newExecution,
+    ...history
+].slice(0, 10);
+
+setHistory(updatedHistory);
+
+localStorage.setItem(
+    `history-${roomId}`,
+    JSON.stringify(updatedHistory)
+);
             setLoading(false);
         } 
         catch (error) {
 
-    console.log(error);
+    console.log("FULL ERROR:", error);
 
-    setOutput("Error running code.");
+    console.log("Response:", error.response);
+
+    console.log("Data:", error.response?.data);
+
+    setOutput(
+        error.response?.data?.message ||
+        error.message ||
+        "Error running code."
+    );
 
     setLoading(false);
 }
@@ -205,6 +278,7 @@ return (
 
                 <div className="output-container">
                     <OutputPanel output={output} />
+                    <ExecutionHistory history={history} />
                 </div>
 
             </div>

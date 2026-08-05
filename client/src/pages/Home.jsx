@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 
@@ -8,14 +8,35 @@ function Home() {
 
    
     const [roomId, setRoomId] = useState("");
+    const [recentRooms, setRecentRooms] = useState([]);
     const user = JSON.parse(localStorage.getItem("user"));
 const username = user?.username || "Guest";
+useEffect(() => {
+    const rooms = JSON.parse(localStorage.getItem("recentRooms")) || [];
+    setRecentRooms(rooms);
+}, []);
+const saveRoom = (id) => {
+    let rooms = JSON.parse(localStorage.getItem("recentRooms")) || [];
+
+    rooms = rooms.filter(room => room.roomId !== id);
+
+    rooms.unshift({
+        roomId: id,
+        joinedAt: new Date().toLocaleString()
+    });
+
+    rooms = rooms.slice(0, 5);
+
+    localStorage.setItem("recentRooms", JSON.stringify(rooms));
+    setRecentRooms(rooms);
+};
 
    const createRoom = async () => {
 
     try {
 
         const res = await API.post("/rooms/create");
+        saveRoom(res.data.room.roomId);
 
         navigate(`/room/${res.data.room.roomId}`, {
             state: {
@@ -42,6 +63,7 @@ const username = user?.username || "Guest";
 
     }
 
+    saveRoom(roomId);
     navigate(`/room/${roomId}`, {
 
         state: {
@@ -88,6 +110,77 @@ const username = user?.username || "Guest";
             >
                 Join Room
             </button>
+
+            <hr style={{ margin: "30px 0" }} />
+
+<h3>🕒 Recent Rooms</h3>
+
+{recentRooms.length === 0 ? (
+    <p>No recent rooms</p>
+) : (
+    recentRooms.map((room) => (
+        <div
+            key={room.roomId}
+            style={{
+                background: "#252526",
+                color: "white",
+                padding: "15px",
+                borderRadius: "12px",
+                marginBottom: "15px",
+                width: "420px",
+                marginInline: "auto",
+                boxShadow: "0 4px 10px rgba(0,0,0,0.3)"
+            }}
+        >
+            <h4>📁 Room: {room.roomId}</h4>
+
+            <p>🕒 Joined: {room.joinedAt}</p>
+
+            <div
+                style={{
+                   display: "flex",
+justifyContent: "space-between",
+marginTop: "15px"
+                }}
+            >
+                <button
+                    onClick={() =>
+                        navigate(`/room/${room.roomId}`, {
+                            state: { username }
+                        })
+                    }
+                >
+                    🚀 Join
+                </button>
+
+                <button
+                    onClick={() =>
+                        navigator.clipboard.writeText(room.roomId)
+                    }
+                >
+                    📋 Copy
+                </button>
+
+                <button
+                    onClick={() => {
+                        const updated = recentRooms.filter(
+                            (r) => r.roomId !== room.roomId
+                        );
+
+                        localStorage.setItem(
+                            "recentRooms",
+                            JSON.stringify(updated)
+                        );
+
+                        setRecentRooms(updated);
+                    }}
+                >
+                    🗑 Delete
+                </button>
+            </div>
+        </div>
+    ))
+)}
 
         </div>
 

@@ -16,6 +16,12 @@ function Navbar({ roomId }) {
         navigate("/");
     };
 
+    const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+};
+
     return (
         <nav
             style={{
@@ -73,6 +79,10 @@ function Navbar({ roomId }) {
                 <button onClick={leaveRoom}>
                     🚪 Leave
                 </button>
+
+                <button onClick={logout}>
+    🔒 Logout
+</button>
             </div>
         </nav>
     );
