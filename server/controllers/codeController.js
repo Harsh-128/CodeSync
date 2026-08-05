@@ -4,7 +4,7 @@ const runCode = async (req, res) => {
 
     try {
 
-        const { language_id, source_code } = req.body;
+        const { language_id, source_code, stdin } = req.body;
 
         const options = {
             method: "POST",
@@ -15,9 +15,12 @@ const runCode = async (req, res) => {
                 "X-RapidAPI-Host": "judge0-extra-ce1.p.rapidapi.com"
             },
             data: {
-                language_id,
-                source_code
-            }
+    language_id,
+    source_code,
+    stdin
+}
+            
+             
         };
 
         const response = await axios.request(options);

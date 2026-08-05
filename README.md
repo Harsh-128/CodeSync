@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/github/last-commit/Harsh-128/CodeSync?style=for-the-badge" alt="Last Commit"/>
 </p>
 
-## 🚀 About CodeSync
+##   🚀 About CodeSync
 
 CodeSync is a full-stack real-time collaborative code editor that enables multiple developers to create secure rooms, write code together, communicate through live chat, and execute code from a shared workspace. It demonstrates real-time communication using Socket.IO and follows the MERN stack architecture.
 
