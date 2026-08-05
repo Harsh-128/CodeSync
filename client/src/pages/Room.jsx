@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import "../styles/room.css";
 import Navbar from "../components/Navbar";
-
+import ThemeSelector from "../components/ThemeSelector";
 import API from "../services/api";
+import InputPanel from "../components/InputPanel";
 
 import CodeEditor from "../components/CodeEditor";
 import LanguageSelector from "../components/LanguageSelector";
@@ -20,7 +21,10 @@ function Room() {
     const location = useLocation();
 const username = location.state?.username || "Anonymous";
 
+
     const [language, setLanguage] = useState("cpp");
+    const [theme, setTheme] = useState("vs-dark");
+    
 
     const [code, setCode] = useState(`#include <iostream>
 
@@ -34,6 +38,9 @@ int main() {
 }`);
 
     const [output, setOutput] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [input, setInput] = useState("");
+
     const [users, setUsers] = useState([]);
     const [messages, setMessages] = useState([]);
 
@@ -104,6 +111,8 @@ int main() {
     };
 
     const runCode = async () => {
+        setLoading(true);
+        await new Promise(resolve => setTimeout(resolve, 3000));
         try {
             const languageMap = {
                 cpp: 54,
@@ -113,19 +122,26 @@ int main() {
             };
 
             const res = await API.post("/code/run", {
-                language_id: languageMap[language],
-                source_code: code,
-            });
+    language_id: languageMap[language],
+    source_code: code,
+    stdin: input,
+});
 
             setOutput(
                 res.data.stdout ||
                 res.data.compile_output ||
                 res.data.stderr
             );
-        } catch (error) {
-            console.log(error);
-            setOutput("Error running code.");
-        }
+            setLoading(false);
+        } 
+        catch (error) {
+
+    console.log(error);
+
+    setOutput("Error running code.");
+
+    setLoading(false);
+}
     };
 
     const sendMessage = (message) => {
@@ -153,27 +169,41 @@ return (
                 <div className="top-controls">
 
                     <LanguageSelector
-                        language={language}
-                        setLanguage={setLanguage}
-                    />
+    language={language}
+    setLanguage={setLanguage}
+/>
 
-                    <RunButton runCode={runCode} />
+<ThemeSelector
+    theme={theme}
+    setTheme={setTheme}
+/>
+
+<RunButton
+    runCode={runCode}
+    loading={loading}
+/>
 
                 </div>
 
                 <div className="editor-container">
 
-                    <CodeEditor
-                        language={language}
-                        code={code}
-                        onCodeChange={handleEditorChange}
-                    />
+                   <CodeEditor
+    language={language}
+    code={code}
+    onCodeChange={handleEditorChange}
+    theme={theme}
+/> 
 
                 </div>
 
-                <div className="output-container">
-                    <OutputPanel output={output} />
-                </div>
+                <InputPanel
+    input={input}
+    setInput={setInput}
+/>
+
+<div className="output-container">
+    <OutputPanel output={output} />
+</div>
 
             </div>
 
