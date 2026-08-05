@@ -6,76 +6,63 @@ function Home() {
 
     const navigate = useNavigate();
 
-    const [username, setUsername] = useState("");
+   
     const [roomId, setRoomId] = useState("");
+    const user = JSON.parse(localStorage.getItem("user"));
+const username = user?.username || "Guest";
 
-    const createRoom = async () => {
+   const createRoom = async () => {
 
-        if (!username.trim()) {
-            alert("Please enter your name");
-            return;
-        }
+    try {
 
-        try {
+        const res = await API.post("/rooms/create");
 
-            const res = await API.post("/rooms/create");
-
-            navigate(`/room/${res.data.room.roomId}`, {
-                state: {
-                    username
-                }
-            });
-
-        } catch (err) {
-
-            console.log(err);
-            alert("Failed to create room");
-
-        }
-
-    };
-
-    const joinRoom = () => {
-
-        if (!username.trim() || !roomId.trim()) {
-
-            alert("Enter Username and Room ID");
-
-            return;
-
-        }
-
-        navigate(`/room/${roomId}`, {
-
+        navigate(`/room/${res.data.room.roomId}`, {
             state: {
                 username
             }
-
         });
 
-    };
+    } catch (err) {
+
+        console.log(err);
+        alert("Failed to create room");
+
+    }
+
+};
+
+   const joinRoom = () => {
+
+    if (!roomId.trim()) {
+
+        alert("Enter Room ID");
+
+        return;
+
+    }
+
+    navigate(`/room/${roomId}`, {
+
+        state: {
+            username
+        }
+
+    });
+
+};
 
     return (
 
         <div style={{ padding: "30px" }}>
 
             <h1>🚀 CodeSync</h1>
+            
+            <h3>Welcome, {username} 👋</h3>
 
             <p>Real-Time Collaborative Code Editor</p>
 
-            <input
-                type="text"
-                placeholder="Enter Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                style={{
-                    padding: "10px",
-                    width: "300px",
-                    marginBottom: "15px"
-                }}
-            />
-
-            <br />
+            
 
             <input
                 type="text"

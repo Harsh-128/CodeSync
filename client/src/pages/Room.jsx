@@ -14,6 +14,8 @@ import RunButton from "../components/RunButton";
 import OutputPanel from "../components/OutputPanel";
 import UsersPanel from "../components/UsersPanel";
 
+
+
 const socket = io("http://localhost:3000");
 
 function Room() {
@@ -169,41 +171,41 @@ return (
                 <div className="top-controls">
 
                     <LanguageSelector
-    language={language}
-    setLanguage={setLanguage}
-/>
+                        language={language}
+                        setLanguage={setLanguage}
+                    />
 
-<ThemeSelector
-    theme={theme}
-    setTheme={setTheme}
-/>
+                    <ThemeSelector
+                        theme={theme}
+                        setTheme={setTheme}
+                    />
 
-<RunButton
-    runCode={runCode}
-    loading={loading}
-/>
+                    <RunButton
+                        runCode={runCode}
+                        loading={loading}
+                    />
 
                 </div>
 
                 <div className="editor-container">
 
-                   <CodeEditor
-    language={language}
-    code={code}
-    onCodeChange={handleEditorChange}
-    theme={theme}
-/> 
+                    <CodeEditor
+                        language={language}
+                        code={code}
+                        onCodeChange={handleEditorChange}
+                        theme={theme}
+                    />
 
                 </div>
 
                 <InputPanel
-    input={input}
-    setInput={setInput}
-/>
+                    input={input}
+                    setInput={setInput}
+                />
 
-<div className="output-container">
-    <OutputPanel output={output} />
-</div>
+                <div className="output-container">
+                    <OutputPanel output={output} />
+                </div>
 
             </div>
 
@@ -220,7 +222,6 @@ return (
 
     </div>
 );
-
 }
-
 export default Room;
+
