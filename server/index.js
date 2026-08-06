@@ -10,6 +10,7 @@ const connectDB = require("./config/db");
 const roomRoutes = require("./routes/roomRoutes");
 const codeRoutes = require("./routes/codeRoutes");
 const authRoutes = require("./routes/authRoutes");
+const roomHistoryRoutes = require("./routes/roomHistoryRoutes");
 
 const app = express();
 const server = http.createServer(app);
@@ -44,6 +45,7 @@ app.get("/api/health", (req, res) => {
 app.use("/rooms", roomRoutes);
 app.use("/code", codeRoutes);
 app.use("/auth", authRoutes);
+app.use("/room-history", roomHistoryRoutes);
 
 // Start Server
 const io = new Server(server, {

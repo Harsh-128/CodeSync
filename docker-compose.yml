@@ -1,0 +1,23 @@
+services:
+  mongodb:
+    image: mongo:8
+    container_name: codesync-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+
+  backend:
+    build: ./server
+    container_name: codesync-backend
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      - mongodb
+
+    environment:
+      MONGO_URI: mongodb://mongodb:27017/codesync
+
+volumes:
+  mongodb-data:

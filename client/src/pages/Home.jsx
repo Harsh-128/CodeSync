@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import { Toaster } from "react-hot-toast";
 
 function Home() {
 
@@ -47,7 +48,7 @@ const saveRoom = (id) => {
     } catch (err) {
 
         console.log(err);
-        alert("Failed to create room");
+        toast.error("Failed to create room");
 
     }
 
@@ -57,7 +58,7 @@ const saveRoom = (id) => {
 
     if (!roomId.trim()) {
 
-        alert("Enter Room ID");
+      toast.error("Please enter a Room ID");
 
         return;
 

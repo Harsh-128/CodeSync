@@ -1,16 +1,21 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function Navbar({ roomId }) {
     const navigate = useNavigate();
 
     const copyRoomId = async () => {
-        try {
-            await navigator.clipboard.writeText(roomId);
-            alert("✅ Room ID copied!");
-        } catch (err) {
-            console.log(err);
-        }
-    };
+    try {
+        const roomLink = `${window.location.origin}/room/${roomId}`;
+
+        await navigator.clipboard.writeText(roomLink);
+
+        toast.success("Room link copied!");
+    } catch (err) {
+        console.log(err);
+        toast.error("Failed to copy room link.");
+    }
+};
 
     const leaveRoom = () => {
         navigate("/");
@@ -19,6 +24,9 @@ function Navbar({ roomId }) {
     const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+
+    toast.success("Logged out successfully");
+
     navigate("/login");
 };
 
@@ -75,14 +83,17 @@ function Navbar({ roomId }) {
                 <button onClick={copyRoomId}>
                     📋 Copy
                 </button>
+                <button onClick={() => navigate("/profile")}>
+    👤 Profile
+</button>
 
                 <button onClick={leaveRoom}>
                     🚪 Leave
                 </button>
 
                 <button onClick={logout}>
-    🔒 Logout
-</button>
+                    🔒 Logout
+                </button>
             </div>
         </nav>
     );
