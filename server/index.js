@@ -11,6 +11,7 @@ const roomRoutes = require("./routes/roomRoutes");
 const codeRoutes = require("./routes/codeRoutes");
 const authRoutes = require("./routes/authRoutes");
 const roomHistoryRoutes = require("./routes/roomHistoryRoutes");
+const executeRoutes = require("./routes/executeRoutes");
 
 const app = express();
 const server = http.createServer(app);
@@ -46,6 +47,7 @@ app.use("/rooms", roomRoutes);
 app.use("/code", codeRoutes);
 app.use("/auth", authRoutes);
 app.use("/room-history", roomHistoryRoutes);
+app.use("/api", executeRoutes);
 
 // Start Server
 const io = new Server(server, {
