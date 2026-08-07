@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 // Judge0 URL
-const JUDGE0_URL = "http://localhost:2358";
+const JUDGE0_URL = "http://host.docker.internal:2358";
 
 const submitCode = async (language_id, source_code, stdin = "") => {
     try {
