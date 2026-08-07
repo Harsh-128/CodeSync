@@ -19,6 +19,8 @@ const executeCode = async (req, res) => {
             stdin || ""
         );
 
+        console.log(JSON.stringify(result, null, 2));
+
         return res.status(200).json({
             success: true,
             result,

@@ -166,17 +166,19 @@ useEffect(() => {
                 python: 71,
                 javascript: 63,
             };
+            console.log(code);
 
-            const res = await API.post("/code/run", {
+       const res = await API.post("/api/run-code", {
     language_id: languageMap[language],
     source_code: code,
     stdin: input,
 });
-
             const result =
-    res.data.stdout ||
-    res.data.compile_output ||
-    res.data.stderr;
+    res.data.result.stdout ||
+    res.data.result.compile_output ||
+    res.data.result.stderr ||
+    res.data.result.message ||
+    "No Output";
 
 setOutput(result);
 
