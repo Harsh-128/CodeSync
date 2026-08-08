@@ -2,11 +2,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import Home from "./pages/Home";
-import Room from "./pages/Room";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
+import RoomEntry from "./components/RoomEntry";
 
 function App() {
     return (
@@ -46,13 +46,9 @@ function App() {
                 <Route path="/signup" element={<Signup />} />
 
                 <Route
-                    path="/room/:roomId"
-                    element={
-                        <ProtectedRoute>
-                            <Room />
-                        </ProtectedRoute>
-                    }
-                />
+    path="/room/:roomId"
+    element={<RoomEntry />}
+/>
 
                 <Route
                     path="/profile"

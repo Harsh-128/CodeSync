@@ -1,10 +1,17 @@
 import { useState } from "react";
 import { login } from "../services/auth";
-import { Link, useNavigate } from "react-router-dom";
+import {
+    Link,
+    useNavigate,
+    useLocation
+} from "react-router-dom";
+
+import toast from "react-hot-toast";
 
 function Login() {
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [form, setForm] = useState({
         email: "",
@@ -26,6 +33,7 @@ function Login() {
 
             const res = await login(form);
 
+            // Save authentication
             localStorage.setItem("token", res.token);
 
             localStorage.setItem(
@@ -33,13 +41,51 @@ function Login() {
                 JSON.stringify(res.user)
             );
 
-            alert(res.message);
+            toast.success(
+                res.message || "Login successful!"
+            );
 
-            navigate("/");
+            /*
+             * Check whether the user came from
+             * a shared room link.
+             *
+             * Example:
+             * /room/alpha-sprint
+             */
+
+            const from =
+                location.state?.from?.pathname || "/";
+
+            /*
+             * If user came from a room link,
+             * send them directly into that room.
+             */
+
+            if (from.startsWith("/room/")) {
+
+                navigate(from, {
+                    replace: true,
+                    state: {
+                        username:
+                            res.user?.username ||
+                            res.user?.name ||
+                            res.user?.email ||
+                            "User"
+                    }
+                });
+
+            } else {
+
+                // Normal login → Home
+                navigate("/", {
+                    replace: true
+                });
+
+            }
 
         } catch (err) {
 
-            alert(
+            toast.error(
                 err.response?.data?.message ||
                 "Login failed"
             );
@@ -60,7 +106,9 @@ function Login() {
                     type="email"
                     name="email"
                     placeholder="Email"
+                    value={form.email}
                     onChange={handleChange}
+                    required
                 />
 
                 <br /><br />
@@ -69,15 +117,15 @@ function Login() {
                     type="password"
                     name="password"
                     placeholder="Password"
+                    value={form.password}
                     onChange={handleChange}
+                    required
                 />
 
                 <br /><br />
 
                 <button type="submit">
-
                     Login
-
                 </button>
 
             </form>
@@ -85,15 +133,12 @@ function Login() {
             <br />
 
             <Link to="/signup">
-
                 Create New Account
-
             </Link>
 
         </div>
 
     );
-
 }
 
 export default Login;
