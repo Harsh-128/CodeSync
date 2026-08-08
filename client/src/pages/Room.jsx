@@ -17,7 +17,7 @@ import UsersPanel from "../components/UsersPanel";
 
 
 
-const socket = io("http://localhost:3000");
+const socket = io("https://codesync-backend-lifv.onrender.com");
 
 function Room() {
     const { roomId } = useParams();
