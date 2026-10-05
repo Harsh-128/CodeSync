@@ -33,8 +33,18 @@ connectDB();
 
 // Middleware
 const allowedOrigin = process.env.CLIENT_URL || "http://localhost:5173";
+// Support multiple origins (local + production)
+const allowedOrigins = allowedOrigin.split(",").map(o => o.trim());
+
 app.use(cors({
-    origin: allowedOrigin,
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, curl, etc.)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.some(o => origin.startsWith(o))) {
+            return callback(null, true);
+        }
+        return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true
 }));
 
@@ -66,7 +76,13 @@ app.use("/room-history", roomHistoryRoutes);
 // Start Server
 const io = new Server(server, {
     cors: {
-        origin: allowedOrigin,
+        origin: (origin, callback) => {
+            if (!origin) return callback(null, true);
+            if (allowedOrigins.some(o => origin.startsWith(o))) {
+                return callback(null, true);
+            }
+            return callback(new Error("Not allowed by CORS"));
+        },
         credentials: true
     }
 });

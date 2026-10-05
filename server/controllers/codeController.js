@@ -10,25 +10,21 @@ const LANGUAGE_MAP = {
     63: "javascript",
 };
 
-// Use MSYS2 g++ directly if available (newer, supports C++17/C++20)
-// Falls back to whatever g++ is on PATH
-const GPP_PATH = fs.existsSync("C:\\msys64\\ucrt64\\bin\\g++.exe")
+// Use MSYS2 g++ on Windows (dev), system g++ on Linux (production/Docker)
+const GPP_PATH = process.platform === "win32" && fs.existsSync("C:\\msys64\\ucrt64\\bin\\g++.exe")
     ? "C:\\msys64\\ucrt64\\bin\\g++.exe"
     : "g++";
 
 const MSYS2_BIN = "C:\\msys64\\ucrt64\\bin";
 
-/**
- * Build a clean env object that always has MSYS2 bin first,
- * so both g++ itself and the DLLs it needs are found.
- */
 function buildEnv() {
     const env = { ...process.env };
-    // Normalise PATH key (Windows may use PATH or Path)
-    const pathKey = Object.keys(env).find(k => k.toUpperCase() === "PATH") || "PATH";
-    const currentPath = env[pathKey] || "";
-    if (!currentPath.includes(MSYS2_BIN)) {
-        env[pathKey] = MSYS2_BIN + ";" + currentPath;
+    if (process.platform === "win32") {
+        const pathKey = Object.keys(env).find(k => k.toUpperCase() === "PATH") || "PATH";
+        const currentPath = env[pathKey] || "";
+        if (!currentPath.includes(MSYS2_BIN)) {
+            env[pathKey] = MSYS2_BIN + ";" + currentPath;
+        }
     }
     return env;
 }

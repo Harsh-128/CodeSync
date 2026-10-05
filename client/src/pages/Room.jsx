@@ -10,7 +10,7 @@ import UsersPanel from "../components/UsersPanel";
 import CodeEditor from "../components/CodeEditor";
 import API from "../services/api";
 
-const BACKEND_URL = "http://localhost:3000";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 const LANGUAGES = [
     { label: "C++",        value: "cpp",        id: 54 },
