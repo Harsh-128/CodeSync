@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import "../styles/profile.css";
@@ -5,7 +6,22 @@ import "../styles/profile.css";
 function Profile() {
     const navigate = useNavigate();
 
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = (() => {
+        try {
+            return JSON.parse(localStorage.getItem("user") || "null");
+        } catch {
+            return null;
+        }
+    })();
+
+    // Redirect to login if user data is missing (e.g. storage was cleared)
+    useEffect(() => {
+        if (!user) {
+            navigate("/login", { replace: true });
+        }
+    }, [user, navigate]);
+
+    if (!user) return null;
 
     const logout = () => {
         localStorage.removeItem("token");

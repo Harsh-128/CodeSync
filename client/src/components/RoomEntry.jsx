@@ -1,56 +1,22 @@
-import {
-    useParams,
-    useNavigate
-} from "react-router-dom";
-
-import Home from "../pages/Home";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import Room from "../pages/Room";
 
 function RoomEntry() {
-
     const { roomId } = useParams();
-    const navigate = useNavigate();
-
     const token = localStorage.getItem("token");
 
-    // User wants to login to the shared room
-    const handleRoomLogin = () => {
-
-        navigate("/login", {
-            state: {
-                from: {
-                    pathname: `/room/${roomId}`
-                }
-            }
-        });
-
-    };
-
-    // User wants to create a new account
-    const handleRoomSignup = () => {
-
-        navigate("/signup", {
-            state: {
-                from: {
-                    pathname: `/room/${roomId}`
-                }
-            }
-        });
-
-    };
-
-    // Already logged in → directly enter room
+    // Logged in → go straight into the room
     if (token) {
         return <Room />;
     }
 
-    // Not logged in → show Home page
-    // with the room invitation
+    // Not logged in → redirect to login, preserving the room URL so
+    // after login they land directly in the room
     return (
-        <Home
-            invitedRoomId={roomId}
-            onRoomLogin={handleRoomLogin}
-            onRoomSignup={handleRoomSignup}
+        <Navigate
+            to="/login"
+            replace
+            state={{ from: { pathname: `/room/${roomId}` } }}
         />
     );
 }

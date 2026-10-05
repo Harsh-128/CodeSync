@@ -9,7 +9,7 @@ function ProtectedRoute({ children }) {
             <Navigate
                 to="/login"
                 replace
-                state={{ from: location }}
+                state={{ from: { pathname: location.pathname } }}
             />
         );
     }

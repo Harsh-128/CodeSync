@@ -1,143 +1,109 @@
 import { useState } from "react";
 import { login } from "../services/auth";
-import {
-    Link,
-    useNavigate,
-    useLocation
-} from "react-router-dom";
-
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
+import "../styles/auth.css";
 
 function Login() {
-
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [form, setForm] = useState({
-        email: "",
-        password: ""
-    });
+    const [form, setForm]       = useState({ email: "", password: "" });
+    const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value
-        });
-    };
+    const handleChange = (e) =>
+        setForm({ ...form, [e.target.name]: e.target.value });
 
     const handleSubmit = async (e) => {
-
         e.preventDefault();
+        setLoading(true);
 
         try {
-
             const res = await login(form);
 
-            // Save authentication
             localStorage.setItem("token", res.token);
+            localStorage.setItem("user", JSON.stringify(res.user));
 
-            localStorage.setItem(
-                "user",
-                JSON.stringify(res.user)
-            );
+            toast.success(res.message || "Login successful!");
 
-            toast.success(
-                res.message || "Login successful!"
-            );
-
-            /*
-             * Check whether the user came from
-             * a shared room link.
-             *
-             * Example:
-             * /room/alpha-sprint
-             */
-
-            const from =
-                location.state?.from?.pathname || "/";
-
-            /*
-             * If user came from a room link,
-             * send them directly into that room.
-             */
-
-            if (from.startsWith("/room/")) {
-
-                navigate(from, {
-                    replace: true,
-                    state: {
-                        username:
-                            res.user?.username ||
-                            res.user?.name ||
-                            res.user?.email ||
-                            "User"
-                    }
-                });
-
-            } else {
-
-                // Normal login → Home
-                navigate("/", {
-                    replace: true
-                });
-
-            }
-
+            const from = location.state?.from?.pathname || "/";
+            navigate(from, {
+                replace: true,
+                state: {
+                    username:
+                        res.user?.username ||
+                        res.user?.name ||
+                        res.user?.email ||
+                        "User"
+                }
+            });
         } catch (err) {
-
-            toast.error(
-                err.response?.data?.message ||
-                "Login failed"
-            );
-
+            toast.error(err.response?.data?.message || "Login failed");
+        } finally {
+            setLoading(false);
         }
-
     };
 
     return (
+        <div className="auth-page">
+            <div className="auth-card">
 
-        <div style={{ padding: "40px" }}>
+                {/* Brand */}
+                <div className="auth-brand">
+                    <span className="auth-brand-icon">&lt;/&gt;</span>
+                    <span className="auth-brand-name">Code<span>Sync</span></span>
+                </div>
 
-            <h2>Login</h2>
+                <h2 className="auth-title">Welcome back</h2>
+                <p className="auth-subtitle">Login to continue coding together</p>
 
-            <form onSubmit={handleSubmit}>
+                <form className="auth-form" onSubmit={handleSubmit}>
 
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={form.email}
-                    onChange={handleChange}
-                    required
-                />
+                    <div className="auth-field">
+                        <label className="auth-label">Email</label>
+                        <input
+                            className="auth-input"
+                            type="email"
+                            name="email"
+                            placeholder="you@example.com"
+                            value={form.email}
+                            onChange={handleChange}
+                            required
+                            autoComplete="email"
+                        />
+                    </div>
 
-                <br /><br />
+                    <div className="auth-field">
+                        <label className="auth-label">Password</label>
+                        <input
+                            className="auth-input"
+                            type="password"
+                            name="password"
+                            placeholder="••••••••"
+                            value={form.password}
+                            onChange={handleChange}
+                            required
+                            autoComplete="current-password"
+                        />
+                    </div>
 
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={form.password}
-                    onChange={handleChange}
-                    required
-                />
+                    <button
+                        className="auth-btn"
+                        type="submit"
+                        disabled={loading}
+                    >
+                        {loading ? "Logging in…" : "Login"}
+                    </button>
 
-                <br /><br />
+                </form>
 
-                <button type="submit">
-                    Login
-                </button>
+                <div className="auth-footer">
+                    Don't have an account?
+                    <Link to="/signup" state={location.state}>Sign up</Link>
+                </div>
 
-            </form>
-
-            <br />
-
-            <Link to="/signup">
-                Create New Account
-            </Link>
-
+            </div>
         </div>
-
     );
 }
 

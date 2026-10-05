@@ -32,7 +32,7 @@ const getRoomHistory = async (req, res) => {
         const history = await RoomHistory.find({ userId })
             .sort({ joinedAt: -1 });
 
-        res.json(history);
+        res.json({ success: true, history });
     } catch (error) {
         res.status(500).json({
             success: false,

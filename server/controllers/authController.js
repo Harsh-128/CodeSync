@@ -2,11 +2,24 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    throw new Error("JWT_SECRET environment variable is required");
+}
+
 const signup = async (req, res) => {
 
     try {
 
         const { username, email, password } = req.body;
+
+        // Validate required fields
+        if (!username || !email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Username, email and password are all required"
+            });
+        }
 
         // Check if user already exists
         const existingUser = await User.findOne({ email });
@@ -50,6 +63,14 @@ const login = async (req, res) => {
 
         const { email, password } = req.body;
 
+        // Validate required fields
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required"
+            });
+        }
+
         const user = await User.findOne({ email });
 
         if (!user) {
@@ -73,7 +94,7 @@ const login = async (req, res) => {
                 id: user._id,
                 email: user.email
             },
-            process.env.JWT_SECRET || "codesync_secret",
+            JWT_SECRET,
             {
                 expiresIn: "7d"
             }

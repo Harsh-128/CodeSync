@@ -1,150 +1,113 @@
 import { useState } from "react";
 import { signup } from "../services/auth";
-import {
-    Link,
-    useNavigate,
-    useLocation
-} from "react-router-dom";
-
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
+import "../styles/auth.css";
 
 function Signup() {
-
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [form, setForm] = useState({
-        username: "",
-        email: "",
-        password: ""
-    });
+    const [form, setForm]       = useState({ username: "", email: "", password: "" });
+    const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => {
-
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value
-        });
-
-    };
+    const handleChange = (e) =>
+        setForm({ ...form, [e.target.name]: e.target.value });
 
     const handleSubmit = async (e) => {
-
         e.preventDefault();
+        setLoading(true);
 
         try {
-
             const res = await signup(form);
-
-            toast.success(
-                res.message || "Account created successfully!"
-            );
-
-            /*
-             * Preserve where the user came from.
-             *
-             * If they came from:
-             *
-             * /room/alpha-sprint
-             *
-             * that information is stored in:
-             *
-             * location.state.from
-             */
-
-            const from =
-                location.state?.from || null;
-
-
-            /*
-             * Send them to Login,
-             * but keep the room information.
-             */
+            toast.success(res.message || "Account created! Please login.");
 
             navigate("/login", {
-
                 replace: true,
-
-                state: {
-                    from: from
-                }
-
+                state: { from: location.state?.from || null }
             });
-
         } catch (err) {
-
-            toast.error(
-                err.response?.data?.message ||
-                "Signup failed"
-            );
-
+            toast.error(err.response?.data?.message || "Signup failed");
+        } finally {
+            setLoading(false);
         }
-
     };
 
     return (
+        <div className="auth-page">
+            <div className="auth-card">
 
-        <div style={{ padding: "40px" }}>
+                {/* Brand */}
+                <div className="auth-brand">
+                    <span className="auth-brand-icon">&lt;/&gt;</span>
+                    <span className="auth-brand-name">Code<span>Sync</span></span>
+                </div>
 
-            <h2>Create Account</h2>
+                <h2 className="auth-title">Create account</h2>
+                <p className="auth-subtitle">Start collaborating in real-time</p>
 
-            <form onSubmit={handleSubmit}>
+                <form className="auth-form" onSubmit={handleSubmit}>
 
-                <input
-                    type="text"
-                    name="username"
-                    placeholder="Username"
-                    value={form.username}
-                    onChange={handleChange}
-                    required
-                />
+                    <div className="auth-field">
+                        <label className="auth-label">Username</label>
+                        <input
+                            className="auth-input"
+                            type="text"
+                            name="username"
+                            placeholder="yourname"
+                            value={form.username}
+                            onChange={handleChange}
+                            required
+                            autoComplete="username"
+                        />
+                    </div>
 
-                <br />
-                <br />
+                    <div className="auth-field">
+                        <label className="auth-label">Email</label>
+                        <input
+                            className="auth-input"
+                            type="email"
+                            name="email"
+                            placeholder="you@example.com"
+                            value={form.email}
+                            onChange={handleChange}
+                            required
+                            autoComplete="email"
+                        />
+                    </div>
 
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={form.email}
-                    onChange={handleChange}
-                    required
-                />
+                    <div className="auth-field">
+                        <label className="auth-label">Password</label>
+                        <input
+                            className="auth-input"
+                            type="password"
+                            name="password"
+                            placeholder="••••••••"
+                            value={form.password}
+                            onChange={handleChange}
+                            required
+                            autoComplete="new-password"
+                        />
+                    </div>
 
-                <br />
-                <br />
+                    <button
+                        className="auth-btn"
+                        type="submit"
+                        disabled={loading}
+                    >
+                        {loading ? "Creating account…" : "Create Account"}
+                    </button>
 
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={form.password}
-                    onChange={handleChange}
-                    required
-                />
+                </form>
 
-                <br />
-                <br />
+                <div className="auth-footer">
+                    Already have an account?
+                    <Link to="/login" state={location.state}>Login</Link>
+                </div>
 
-                <button type="submit">
-                    Sign Up
-                </button>
-
-            </form>
-
-            <br />
-
-            <Link
-                to="/login"
-                state={location.state}
-            >
-                Already have an account?
-            </Link>
-
+            </div>
         </div>
-
     );
-
 }
 
 export default Signup;

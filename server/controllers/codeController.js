@@ -1,57 +1,212 @@
-const axios = require("axios");
+const { spawn } = require("child_process");
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
+
+const LANGUAGE_MAP = {
+    54: "cpp",
+    62: "java",
+    71: "python",
+    63: "javascript",
+};
+
+// Use MSYS2 g++ directly if available (newer, supports C++17/C++20)
+// Falls back to whatever g++ is on PATH
+const GPP_PATH = fs.existsSync("C:\\msys64\\ucrt64\\bin\\g++.exe")
+    ? "C:\\msys64\\ucrt64\\bin\\g++.exe"
+    : "g++";
+
+const MSYS2_BIN = "C:\\msys64\\ucrt64\\bin";
+
+/**
+ * Build a clean env object that always has MSYS2 bin first,
+ * so both g++ itself and the DLLs it needs are found.
+ */
+function buildEnv() {
+    const env = { ...process.env };
+    // Normalise PATH key (Windows may use PATH or Path)
+    const pathKey = Object.keys(env).find(k => k.toUpperCase() === "PATH") || "PATH";
+    const currentPath = env[pathKey] || "";
+    if (!currentPath.includes(MSYS2_BIN)) {
+        env[pathKey] = MSYS2_BIN + ";" + currentPath;
+    }
+    return env;
+}
+
+/**
+ * Runs a command using spawn(), feeds stdin as a string, returns { stdout, stderr }.
+ * Using spawn instead of exec avoids Windows shell quoting/pipe issues.
+ */
+const MAX_OUTPUT_BYTES = 500 * 1024; // 500 KB limit
+
+function runProcess(cmd, args, cwd, stdinData, timeoutMs = 10000) {
+    return new Promise((resolve) => {
+
+        const child = spawn(cmd, args, {
+            cwd,
+            shell: false,
+            env: buildEnv(),
+        });
+
+        let stdout = "";
+        let stderr = "";
+        let outputTruncated = false;
+
+        child.stdout.on("data", (d) => {
+            if (stdout.length < MAX_OUTPUT_BYTES) {
+                stdout += d.toString();
+                if (stdout.length >= MAX_OUTPUT_BYTES) {
+                    stdout = stdout.slice(0, MAX_OUTPUT_BYTES);
+                    outputTruncated = true;
+                    child.kill(); // stop the process — output limit hit
+                }
+            }
+        });
+        child.stderr.on("data", (d) => {
+            if (stderr.length < MAX_OUTPUT_BYTES) {
+                stderr += d.toString();
+            }
+        });
+
+        // Feed stdin then close it
+        if (stdinData) {
+            child.stdin.write(stdinData);
+        }
+        child.stdin.end();
+
+        const timer = setTimeout(() => {
+            child.kill();
+            resolve({ stdout, stderr: stderr || "Time limit exceeded (10s)", timedOut: true });
+        }, timeoutMs);
+
+        child.on("close", (code) => {
+            clearTimeout(timer);
+            if (outputTruncated) {
+                stdout += "\n\n[Output truncated — exceeded 500KB limit. Check for infinite loops.]";
+            }
+            resolve({ stdout, stderr, exitCode: code });
+        });
+
+        child.on("error", (err) => {
+            clearTimeout(timer);
+            resolve({ stdout: "", stderr: err.message, exitCode: -1 });
+        });
+    });
+}
 
 const runCode = async (req, res) => {
+    const { language_id, source_code, stdin } = req.body;
+
+    if (!language_id || !source_code) {
+        return res.status(400).json({
+            success: false,
+            message: "language_id and source_code are required",
+        });
+    }
+
+    const language = LANGUAGE_MAP[language_id];
+    if (!language) {
+        return res.status(400).json({
+            success: false,
+            message: `Unsupported language_id: ${language_id}`,
+        });
+    }
+
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "codesync-"));
+
     try {
+        let result;
 
-        const { language_id, source_code, stdin } = req.body;
+        // ── Python ─────────────────────────────────────────────
+        if (language === "python") {
+            const srcFile = path.join(tmpDir, "main.py");
+            fs.writeFileSync(srcFile, source_code);
+            result = await runProcess("python", [srcFile], tmpDir, stdin || "");
+        }
 
-        const languageMap = {
-            54: "cpp",
-            62: "java",
-            71: "python",
-            63: "javascript",
-        };
+        // ── JavaScript ─────────────────────────────────────────
+        else if (language === "javascript") {
+            const srcFile = path.join(tmpDir, "main.js");
+            fs.writeFileSync(srcFile, source_code);
+            result = await runProcess("node", [srcFile], tmpDir, stdin || "");
+        }
 
-        const versionMap = {
-            cpp: "10.2.0",
-            java: "15.0.2",
-            python: "3.10.0",
-            javascript: "18.15.0",
-        };
+        // ── C++ ────────────────────────────────────────────────
+        else if (language === "cpp") {
+            const srcFile = path.join(tmpDir, "main.cpp");
+            const outFile = path.join(tmpDir, "main.exe");
+            fs.writeFileSync(srcFile, source_code);
 
-        const language = languageMap[language_id];
+            // Step 1: compile with C++17 using modern g++
+            const compile = await runProcess(
+                GPP_PATH,
+                ["-std=c++17", "-o", outFile, srcFile],
+                tmpDir,
+                ""
+            );
 
-        const response = await axios.post(
-            "https://emkc.org/api/v2/piston/execute",
-            {
-                language,
-                version: versionMap[language],
-                files: [
-                    {
-                        content: source_code,
-                    },
-                ],
-                stdin,
+            if (compile.exitCode !== 0) {
+                // Compilation failed — return compiler errors directly
+                return res.json({
+                    stdout: "",
+                    stderr: compile.stderr,
+                    output: compile.stderr || "Compilation failed",
+                });
             }
-        );
 
-        res.json({
-            stdout: response.data.run.stdout,
-            stderr: response.data.run.stderr,
-            compile_output: response.data.run.output,
+            // Step 2: run
+            result = await runProcess(outFile, [], tmpDir, stdin || "");
+        }
+
+        // ── Java ───────────────────────────────────────────────
+        else if (language === "java") {
+            const classMatch = source_code.match(/public\s+class\s+(\w+)/);
+            const className = classMatch ? classMatch[1] : "Main";
+            const srcFile = path.join(tmpDir, `${className}.java`);
+            fs.writeFileSync(srcFile, source_code);
+
+            // Step 1: compile
+            const compile = await runProcess(
+                "javac",
+                [srcFile, "-d", tmpDir],
+                tmpDir,
+                ""
+            );
+
+            if (compile.stderr && compile.exitCode !== 0) {
+                return res.json({
+                    stdout: "",
+                    stderr: compile.stderr,
+                    output: compile.stderr,
+                });
+            }
+
+            // Step 2: run
+            result = await runProcess(
+                "java",
+                ["-cp", tmpDir, className],
+                tmpDir,
+                stdin || ""
+            );
+        }
+
+        return res.json({
+            stdout: result.stdout,
+            stderr: result.stderr,
+            output: result.stdout || result.stderr || "No output",
         });
 
     } catch (error) {
-
-        console.log(error.response?.data || error.message);
-
-        res.status(500).json({
-            success: false,
-            message: "Error running code",
+        console.error("Code execution error:", error.message);
+        // Always return 200 so the client shows the error instead of "Network Error"
+        return res.status(200).json({
+            stdout: "",
+            stderr: error.message,
+            output: "Execution error: " + error.message,
         });
+    } finally {
+        try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch (_) {}
     }
 };
 
-module.exports = {
-    runCode,
-};
+module.exports = { runCode };

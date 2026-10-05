@@ -1,733 +1,273 @@
-import ChatPanel from "../components/ChatPanel";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
 import "../styles/room.css";
 
 import Navbar from "../components/Navbar";
-import ThemeSelector from "../components/ThemeSelector";
-import API from "../services/api";
-import InputPanel from "../components/InputPanel";
-import ExecutionHistory from "../components/ExecutionHistory";
-
-import CodeEditor from "../components/CodeEditor";
-import LanguageSelector from "../components/LanguageSelector";
-import RunButton from "../components/RunButton";
-import OutputPanel from "../components/OutputPanel";
+import ChatPanel from "../components/ChatPanel";
 import UsersPanel from "../components/UsersPanel";
+import CodeEditor from "../components/CodeEditor";
+import API from "../services/api";
 
+const BACKEND_URL = "http://localhost:3000";
 
-/* =========================================================
-   SOCKET CONNECTION
-========================================================= */
+const LANGUAGES = [
+    { label: "C++",        value: "cpp",        id: 54 },
+    { label: "Python",     value: "python",     id: 71 },
+    { label: "JavaScript", value: "javascript", id: 63 },
+    { label: "Java",       value: "java",       id: 62 },
+];
 
-const socket = io("https://codesync-backend-lifv.onrender.com");
+const THEMES = [
+    { label: "VS Dark",       value: "vs-dark"  },
+    { label: "VS Light",      value: "light"    },
+    { label: "High Contrast", value: "hc-black" },
+];
+
+const DEFAULT_CODE = {
+    cpp: `#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    cout << "Welcome to CodeSync!" << endl;
+    return 0;
+}`,
+    python:     `print("Welcome to CodeSync!")`,
+    javascript: `console.log("Welcome to CodeSync!");`,
+    java: `public class Main {
+    public static void main(String[] args) {
+        System.out.println("Welcome to CodeSync!");
+    }
+}`,
+};
 
 
 function Room() {
+    const { roomId }  = useParams();
+    const location    = useLocation();
+    const navigate    = useNavigate();
 
-    const { roomId } = useParams();
-    const location = useLocation();
-    const navigate = useNavigate();
-
-
-    /* =========================================================
-       USER
-    ========================================================= */
-
+    /* ── User ── */
     const [user] = useState(() => {
-
-        try {
-
-            return JSON.parse(
-                localStorage.getItem("user") || "null"
-            );
-
-        } catch {
-
-            return null;
-
-        }
-
+        try { return JSON.parse(localStorage.getItem("user") || "null"); }
+        catch { return null; }
     });
-
-
-    /*
-       Priority:
-
-       1. Username passed from Home
-       2. Logged-in user's username
-       3. Logged-in user's name
-       4. Logged-in user's email
-    */
 
     const username =
         location.state?.username ||
-        user?.username ||
-        user?.name ||
-        user?.email ||
-        "User";
+        user?.username || user?.name || user?.email || "User";
 
-
-    /* =========================================================
-       ROOM STATE
-    ========================================================= */
-
+    /* ── Room state ── */
     const [language, setLanguage] = useState("cpp");
-
-    const [theme, setTheme] = useState("vs-dark");
-
-    const [code, setCode] = useState(`#include <iostream>
-
-using namespace std;
-
-int main() {
-
-    cout << "Welcome to CodeSync!";
-
-    return 0;
-}`);
-
-
-    const [output, setOutput] = useState("");
-
-    const [history, setHistory] = useState([]);
-
-    const [loading, setLoading] = useState(false);
-
-    const [input, setInput] = useState("");
-
-    const [users, setUsers] = useState([]);
-
+    const [theme,    setTheme]    = useState("vs-dark");
+    const [code,     setCode]     = useState(DEFAULT_CODE.cpp);
+    const [input,    setInput]    = useState("");
+    const [output,   setOutput]   = useState("");
+    const [loading,  setLoading]  = useState(false);
+    const [users,    setUsers]    = useState([]);
     const [messages, setMessages] = useState([]);
 
+    /* ── Language ref for socket handler (avoids stale closure) ── */
+    const languageRef = useRef(language);
+    useEffect(() => { languageRef.current = language; }, [language]);
 
-    /* =========================================================
-       DEFAULT CODE
-    ========================================================= */
-
-    const getDefaultCode = (lang) => {
-
-        switch (lang) {
-
-            case "cpp":
-
-                return `#include <iostream>
-
-using namespace std;
-
-int main() {
-
-    cout << "Welcome to CodeSync!";
-
-    return 0;
-}`;
-
-            case "java":
-
-                return `public class Main {
-
-    public static void main(String[] args) {
-
-        System.out.println("Welcome to CodeSync!");
-
-    }
-
-}`;
-
-            case "python":
-
-                return `print("Welcome to CodeSync!")`;
-
-            case "javascript":
-
-                return `console.log("Welcome to CodeSync!");`;
-
-            default:
-
-                return "";
-
-        }
-
-    };
-
-
-    /* =========================================================
-       AUTH CHECK
-    ========================================================= */
-
+    /* ── Auth guard ── */
     useEffect(() => {
-
-        const token = localStorage.getItem("token");
-
-        const savedUser = localStorage.getItem("user");
-
-        if (!token || !savedUser) {
-
+        if (!localStorage.getItem("token") || !localStorage.getItem("user")) {
             navigate("/login", {
                 replace: true,
-                state: {
-                    from: `/room/${roomId}`
-                }
+                state: { from: { pathname: `/room/${roomId}` } }
             });
-
         }
-
     }, [navigate, roomId]);
 
-
-    /* =========================================================
-       SOCKET ROOM CONNECTION
-    ========================================================= */
+    /* ── Socket ── */
+    const socketRef = useRef(null);
+    const [socketReady, setSocketReady] = useState(false);
 
     useEffect(() => {
+        if (!roomId || !username) return;
 
-        if (!roomId || !username) {
-            return;
-        }
+        const s = io(BACKEND_URL);
+        socketRef.current = s;
 
+        const joinRoom = () => {
+            s.emit("join-room", { roomId, username });
+            setSocketReady(true);
+        };
+        s.on("connect", joinRoom);
+        if (s.connected) joinRoom();
 
-        console.log("Joining room:", roomId);
-
-        console.log("Username:", username);
-
-
-        /*
-           Join room
-        */
-
-        socket.emit("join-room", {
-
-            roomId,
-
-            username
-
+        s.on("code-update", (newCode) => {
+            const updated = typeof newCode === "string" ? newCode : newCode?.code;
+            if (!updated) return;
+            setCode(updated);
+            localStorage.setItem(`code-${roomId}-${languageRef.current}`, updated);
         });
 
+        s.on("users-update",    (list) => setUsers(list || []));
+        s.on("receive-message", (msg)  => setMessages(prev => [
+            ...prev,
+            { ...msg, id: `${Date.now()}-${Math.random()}` }
+        ]));
 
-        /* -----------------------------------------
-           CODE UPDATE
-        ----------------------------------------- */
+        return () => { s.disconnect(); socketRef.current = null; setSocketReady(false); };
+    }, [roomId, username]);
 
-        const handleCodeUpdate = (newCode) => {
-
-            /*
-              Backend currently sends the code directly.
-            */
-
-            const updatedCode =
-                typeof newCode === "string"
-                    ? newCode
-                    : newCode?.code;
-
-
-            if (!updatedCode) {
-                return;
-            }
-
-
-            setCode(updatedCode);
-
-
-            localStorage.setItem(
-
-                `code-${roomId}-${language}`,
-
-                updatedCode
-
-            );
-
-        };
-
-
-        /* -----------------------------------------
-           USERS UPDATE
-        ----------------------------------------- */
-
-        const handleUsersUpdate = (usersList) => {
-
-            console.log("Users in room:", usersList);
-
-            setUsers(usersList || []);
-
-        };
-
-
-        /* -----------------------------------------
-           CHAT MESSAGE
-        ----------------------------------------- */
-
-        const handleReceiveMessage = (message) => {
-
-            setMessages((prev) => [
-
-                ...prev,
-
-                message
-
-            ]);
-
-        };
-
-
-        socket.on(
-            "code-update",
-            handleCodeUpdate
-        );
-
-
-        socket.on(
-            "users-update",
-            handleUsersUpdate
-        );
-
-
-        socket.on(
-            "receive-message",
-            handleReceiveMessage
-        );
-
-
-        /* -----------------------------------------
-           CLEANUP
-        ----------------------------------------- */
-
-        return () => {
-
-            socket.off(
-                "code-update",
-                handleCodeUpdate
-            );
-
-
-            socket.off(
-                "users-update",
-                handleUsersUpdate
-            );
-
-
-            socket.off(
-                "receive-message",
-                handleReceiveMessage
-            );
-
-        };
-
-    }, [roomId, username, language]);
-
-
-    /* =========================================================
-       LOAD SAVED CODE WHEN LANGUAGE CHANGES
-    ========================================================= */
-
+    /* ── Load saved code on language change ── */
     useEffect(() => {
-
-        const savedCode = localStorage.getItem(
-
-            `code-${roomId}-${language}`
-
-        );
-
-
-        if (savedCode) {
-
-            setCode(savedCode);
-
-        } else {
-
-            setCode(
-                getDefaultCode(language)
-            );
-
-        }
-
+        const saved = localStorage.getItem(`code-${roomId}-${language}`);
+        setCode(saved || DEFAULT_CODE[language] || "");
     }, [language, roomId]);
 
-
-    /* =========================================================
-       LOAD EXECUTION HISTORY
-    ========================================================= */
-
-    useEffect(() => {
-
-        try {
-
-            const savedHistory = JSON.parse(
-
-                localStorage.getItem(
-                    `history-${roomId}`
-                ) || "[]"
-
-            );
-
-
-            setHistory(savedHistory);
-
-        } catch {
-
-            setHistory([]);
-
-        }
-
-    }, [roomId]);
-
-
-    /* =========================================================
-       CODE EDITOR CHANGE
-    ========================================================= */
-
+    /* ── Handlers ── */
     const handleEditorChange = (value) => {
-
         setCode(value);
-
-
-        /*
-           Save locally
-        */
-
-        localStorage.setItem(
-
-            `code-${roomId}-${language}`,
-
-            value
-
-        );
-
-
-        /*
-           Send to other collaborators
-        */
-
-        socket.emit("code-change", {
-
-            roomId,
-
-            code: value
-
-        });
-
+        localStorage.setItem(`code-${roomId}-${language}`, value);
+        socketRef.current?.emit("code-change", { roomId, code: value });
     };
 
-
-    /* =========================================================
-       RUN CODE
-    ========================================================= */
+    const handleLanguageChange = (lang) => {
+        setLanguage(lang);
+        setOutput("");
+    };
 
     const runCode = async () => {
-
-        if (loading) {
-            return;
-        }
-
-
+        if (loading) return;
         setLoading(true);
-
-
-        setOutput(
-            "Running code...\nPlease wait..."
-        );
-
+        setOutput("Running…");
 
         try {
-
-            const languageMap = {
-
-                cpp: 54,
-
-                java: 62,
-
-                python: 71,
-
-                javascript: 63
-
-            };
-
-
-            const res = await API.post(
-
-                "/api/run-code",
-
-                {
-
-                    language_id:
-                        languageMap[language],
-
-                    source_code:
-                        code,
-
-                    stdin:
-                        input
-
-                }
-
-            );
-
-
-            const result =
-
-                res.data?.result?.stdout ||
-
-                res.data?.result?.compile_output ||
-
-                res.data?.result?.stderr ||
-
-                res.data?.result?.message ||
-
-                "No Output";
-
-
-            setOutput(result);
-
-
-            /* -----------------------------------------
-               EXECUTION HISTORY
-            ----------------------------------------- */
-
-            const newExecution = {
-
-                language,
-
-                code,
-
-                input,
-
-                output: result,
-
-                time:
-                    new Date().toLocaleString()
-
-            };
-
-
-            const updatedHistory = [
-
-                newExecution,
-
-                ...history
-
-            ].slice(0, 10);
-
-
-            setHistory(updatedHistory);
-
-
-            localStorage.setItem(
-
-                `history-${roomId}`,
-
-                JSON.stringify(updatedHistory)
-
-            );
-
-        } catch (error) {
-
-            console.error(
-                "FULL ERROR:",
-                error
-            );
-
-
-            console.error(
-                "Response:",
-                error.response
-            );
-
-
-            console.error(
-                "Data:",
-                error.response?.data
-            );
-
+            const lang = LANGUAGES.find(l => l.value === language);
+            const res  = await API.post("/code/run", {
+                language_id: lang.id,
+                source_code: code,
+                stdin:       input,
+            });
 
             setOutput(
-
-                error.response?.data?.message ||
-
-                error.message ||
-
-                "Error running code."
-
+                res.data?.stdout ||
+                res.data?.output ||
+                res.data?.stderr ||
+                "No output"
             );
-
+        } catch (err) {
+            setOutput(err.response?.data?.message || err.message || "Error running code");
         } finally {
-
             setLoading(false);
-
         }
-
     };
 
-
-    /* =========================================================
-       SEND CHAT MESSAGE
-    ========================================================= */
-
-    const sendMessage = (message) => {
-
-        if (!message?.trim()) {
-            return;
-        }
-
-
-        socket.emit(
-
-            "send-message",
-
-            {
-
-                roomId,
-
-                message
-
-            }
-
-        );
-
+    const sendMessage = (msg) => {
+        if (!msg?.trim()) return;
+        socketRef.current?.emit("send-message", { roomId, message: msg });
     };
 
+    const isError = output.toLowerCase().includes("error") ||
+                    output.toLowerCase().includes("failed");
 
-    /* =========================================================
-       RENDER
-    ========================================================= */
-
+    /* ── Render ── */
     return (
-
         <div className="room-page">
 
             <Navbar roomId={roomId} />
 
-
             <div className="main-content">
 
+                {/* ── LEFT — Users ── */}
+                <UsersPanel users={users} />
 
-                {/* =========================================
-                    LEFT PANEL
-                ========================================= */}
-
-                <div className="left-panel">
-
-                    <UsersPanel
-                        users={users}
-                    />
-
-                </div>
-
-
-                {/* =========================================
-                    CENTER PANEL
-                ========================================= */}
-
+                {/* ── CENTER — Editor + IO ── */}
                 <div className="center-panel">
 
+                    {/* Toolbar */}
+                    <div className="editor-toolbar">
+                        {/* Language */}
+                        <select
+                            value={language}
+                            onChange={(e) => handleLanguageChange(e.target.value)}
+                            title="Language"
+                        >
+                            {LANGUAGES.map(l => (
+                                <option key={l.value} value={l.value}>{l.label}</option>
+                            ))}
+                        </select>
 
-                    {/* TOP CONTROLS */}
+                        {/* Theme */}
+                        <select
+                            value={theme}
+                            onChange={(e) => setTheme(e.target.value)}
+                            title="Theme"
+                        >
+                            {THEMES.map(t => (
+                                <option key={t.value} value={t.value}>{t.label}</option>
+                            ))}
+                        </select>
 
-                    <div className="top-controls">
-
-                        <LanguageSelector
-
-                            language={language}
-
-                            setLanguage={setLanguage}
-
-                        />
-
-
-                        <ThemeSelector
-
-                            theme={theme}
-
-                            setTheme={setTheme}
-
-                        />
-
-
-                        <RunButton
-
-                            runCode={runCode}
-
-                            loading={loading}
-
-                        />
-
-                    </div>
-
-
-                    {/* CODE EDITOR */}
-
-                    <div className="editor-container">
-
-                        <CodeEditor
-
-                            language={language}
-
-                            code={code}
-
-                            onCodeChange={
-                                handleEditorChange
+                        {/* Run button */}
+                        <button
+                            className="run-btn"
+                            onClick={runCode}
+                            disabled={loading}
+                        >
+                            {loading
+                                ? <><span className="spinner" /> Running…</>
+                                : <>▶ Run Code</>
                             }
+                        </button>
+                    </div>
 
+                    {/* Monaco Editor */}
+                    <div className="editor-container">
+                        <CodeEditor
+                            language={language}
+                            code={code}
+                            onCodeChange={handleEditorChange}
                             theme={theme}
-
+                            socketRef={socketRef}
+                            socketReady={socketReady}
+                            roomId={roomId}
+                            username={username}
                         />
-
                     </div>
 
+                    {/* Input / Output side by side */}
+                    <div className="io-area">
+                        {/* stdin */}
+                        <div className="io-pane">
+                            <div className="io-label">⌨ Input (stdin)</div>
+                            <textarea
+                                className="io-textarea"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                placeholder="Enter program input here…"
+                                spellCheck={false}
+                            />
+                        </div>
 
-                    {/* INPUT */}
-
-                    <InputPanel
-
-                        input={input}
-
-                        setInput={setInput}
-
-                    />
-
-
-                    {/* OUTPUT */}
-
-                    <div className="output-container">
-
-                        <OutputPanel
-                            output={output}
-                        />
-
-
-                        <ExecutionHistory
-                            history={history}
-                        />
-
+                        {/* stdout */}
+                        <div className="io-pane">
+                            <div className="io-label output-label">▶ Output</div>
+                            <div className={`io-output ${isError ? "error" : ""} ${!output ? "placeholder" : ""}`}>
+                                {output || "Output will appear here after running…"}
+                            </div>
+                        </div>
                     </div>
 
                 </div>
 
-
-                {/* =========================================
-                    RIGHT PANEL
-                ========================================= */}
-
-                <div className="right-panel">
-
-                    <ChatPanel
-
-                        messages={messages}
-
-                        sendMessage={sendMessage}
-
-                    />
-
-                </div>
-
+                {/* ── RIGHT — Chat ── */}
+                <ChatPanel
+                    messages={messages}
+                    sendMessage={sendMessage}
+                    currentUser={username}
+                />
 
             </div>
 
         </div>
-
     );
-
 }
-
 
 export default Room;

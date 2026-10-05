@@ -1,4 +1,5 @@
 const Room = require("../models/Room");
+const crypto = require("crypto");
 
 // Get all rooms
 const getRooms = async (req, res) => {
@@ -30,14 +31,26 @@ const getRooms = async (req, res) => {
 const createRoom = async (req, res) => {
     try {
 
-        const roomId = Math.random()
-            .toString(36)
-            .substring(2, 8)
-            .toUpperCase();
+        // Generate a collision-safe 6-character room ID using crypto
+        let roomId;
+        let attempts = 0;
+        const MAX_ATTEMPTS = 10;
 
-        const newRoom = new Room({
-            roomId: roomId
-        });
+        do {
+            roomId = crypto.randomBytes(3).toString("hex").toUpperCase(); // 6 hex chars
+            const existing = await Room.findOne({ roomId });
+            if (!existing) break;
+            attempts++;
+        } while (attempts < MAX_ATTEMPTS);
+
+        if (attempts >= MAX_ATTEMPTS) {
+            return res.status(500).json({
+                success: false,
+                message: "Could not generate a unique room ID. Please try again."
+            });
+        }
+
+        const newRoom = new Room({ roomId });
 
         await newRoom.save();
 

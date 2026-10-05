@@ -1,98 +1,50 @@
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 function Navbar({ roomId }) {
     const navigate = useNavigate();
 
-    const copyRoomId = async () => {
-    try {
-        const roomLink = `${window.location.origin}/room/${roomId}`;
-
-        await navigator.clipboard.writeText(roomLink);
-
-        toast.success("Room link copied!");
-    } catch (err) {
-        console.log(err);
-        toast.error("Failed to copy room link.");
-    }
-};
-
-    const leaveRoom = () => {
-        navigate("/");
+    const copyRoomLink = async () => {
+        try {
+            const link = `${window.location.origin}/room/${roomId}`;
+            await navigator.clipboard.writeText(link);
+            toast.success("Room link copied!");
+        } catch {
+            toast.error("Failed to copy link");
+        }
     };
 
     const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-
-    toast.success("Logged out successfully");
-
-    navigate("/login");
-};
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        toast.success("Logged out");
+        navigate("/login");
+    };
 
     return (
-        <nav
-            style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                background: "#252526",
-                padding: "18px 30px",
-                borderRadius: "14px",
-                marginBottom: "20px",
-                boxShadow: "0 6px 15px rgba(0,0,0,0.35)"
-            }}
-        >
-            <div>
-                <h2
-                    style={{
-                        margin: 0,
-                        color: "white"
-                    }}
-                >
-                    🚀 CodeSync
-                </h2>
-
-                <p
-                    style={{
-                        margin: "4px 0 0",
-                        color: "#b3b3b3",
-                        fontSize: "14px"
-                    }}
-                >
-                    Real-Time Collaborative Editor
-                </p>
+        <nav className="room-navbar">
+            {/* Brand */}
+            <div className="brand">
+                <span className="brand-icon">&lt;/&gt;</span>
+                <span className="brand-name">Code<span>Sync</span></span>
             </div>
 
-            <div
-                style={{
-                    color: "white",
-                    fontWeight: "bold",
-                    fontSize: "18px"
-                }}
-            >
-                Room: {roomId}
-            </div>
+            {/* Room ID */}
+            <span className="room-id-badge">⬡ Room: {roomId}</span>
 
-            <div
-                style={{
-                    display: "flex",
-                    gap: "10px"
-                }}
-            >
-                <button onClick={copyRoomId}>
-                    📋 Copy
+            {/* Actions */}
+            <div className="nav-actions">
+                <button className="nav-btn" onClick={copyRoomLink} title="Copy invite link">
+                    🔗 Copy Link
                 </button>
-                <button onClick={() => navigate("/profile")}>
-    👤 Profile
-</button>
-
-                <button onClick={leaveRoom}>
-                    🚪 Leave
+                <button className="nav-btn primary" onClick={() => navigate("/profile")} title="Profile">
+                    👤 Profile
                 </button>
-
-                <button onClick={logout}>
-                    🔒 Logout
+                <button className="nav-btn" onClick={() => navigate("/")} title="Leave room">
+                    ← Leave
+                </button>
+                <button className="nav-btn danger" onClick={logout} title="Logout">
+                    Logout
                 </button>
             </div>
         </nav>

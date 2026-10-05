@@ -16,7 +16,7 @@ function ExecutionHistory({ history }) {
             ) : (
                 history.map((item, index) => (
                     <div
-                        key={index}
+                        key={item.id ?? index}
                         style={{
                             borderBottom: "1px solid #444",
                             padding: "12px 0"
