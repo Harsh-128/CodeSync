@@ -4,6 +4,10 @@ const socketHandler = require("./socket/socketHandler");
 
 require("dotenv").config();
 
+// Force Google DNS to bypass ISP/router DNS that blocks MongoDB SRV lookups
+const dns = require("dns");
+dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
+
 // Keep server alive — log unhandled errors instead of crashing
 process.on("uncaughtException", (err) => {
     console.error("Uncaught Exception:", err.message);
