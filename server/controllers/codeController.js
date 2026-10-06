@@ -35,7 +35,7 @@ function buildEnv() {
  */
 const MAX_OUTPUT_BYTES = 500 * 1024; // 500 KB limit
 
-function runProcess(cmd, args, cwd, stdinData, timeoutMs = 10000) {
+function runProcess(cmd, args, cwd, stdinData, timeoutMs = 30000) {
     return new Promise((resolve) => {
 
         const child = spawn(cmd, args, {
@@ -133,12 +133,13 @@ const runCode = async (req, res) => {
             const outFile = path.join(tmpDir, "main.exe");
             fs.writeFileSync(srcFile, source_code);
 
-            // Step 1: compile with C++17 using modern g++
+            // Step 1: compile with C++17 using modern g++ (60s timeout for slow free tier)
             const compile = await runProcess(
                 GPP_PATH,
                 ["-std=c++17", "-o", outFile, srcFile],
                 tmpDir,
-                ""
+                "",
+                60000
             );
 
             if (compile.exitCode !== 0) {
@@ -161,12 +162,13 @@ const runCode = async (req, res) => {
             const srcFile = path.join(tmpDir, `${className}.java`);
             fs.writeFileSync(srcFile, source_code);
 
-            // Step 1: compile
+            // Step 1: compile Java (60s timeout for slow free tier)
             const compile = await runProcess(
                 "javac",
                 [srcFile, "-d", tmpDir],
                 tmpDir,
-                ""
+                "",
+                60000
             );
 
             if (compile.stderr && compile.exitCode !== 0) {
