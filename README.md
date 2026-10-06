@@ -6,7 +6,7 @@
 
 ### Real-Time Collaborative Code Editor
 
-**[🔗 Live Demo](https://code-sync-jnzj.vercel.app)** &nbsp;·&nbsp; **[� Backend API](https://codesync-backend-gur0.onrender.com/api/health)** &nbsp;·&nbsp; **[📦 GitHub](https://github.com/Harsh-128/CodeSync)**
+**[Live Demo](https://code-sync-jnzj.vercel.app)** &nbsp;·&nbsp; **[Backend API](https://codesync-backend-gur0.onrender.com/api/health)** &nbsp;·&nbsp; **[GitHub](https://github.com/Harsh-128/CodeSync)**
 
 <p>
   <img src="https://img.shields.io/github/stars/Harsh-128/CodeSync?style=for-the-badge&color=7c3aed" />
@@ -29,7 +29,7 @@
 
 ---
 
-## � What is CodeSync?
+## What is CodeSync?
 
 CodeSync is a **full-stack real-time collaborative code editor** built with the MERN stack. Multiple developers can join the same room, write code together, see each other's live cursors, chat, and execute code — all in the browser without any installation.
 
@@ -37,62 +37,63 @@ Think of it as a lightweight **Google Docs for code**, with a built-in code runn
 
 ---
 
-## �🚀 Live Demo
+## Live Demo
 
-> **Try it → [https://code-sync-jnzj.vercel.app](https://code-sync-jnzj.vercel.app)**
+> **Try it at [https://code-sync-jnzj.vercel.app](https://code-sync-jnzj.vercel.app)**
 
 1. Sign up for a free account
 2. Create a room — get a unique Room ID
 3. Share the room link with a friend
 4. Code together in real time!
 
-> ⚠️ Backend runs on Render free tier — first load after inactivity may take ~30 seconds to wake up.
+> Note: Backend runs on Render free tier — first load after inactivity may take ~30 seconds to wake up.
 
 ---
 
-## ✨ Features
+## Features
 
 ### Core
 | Feature | Description |
 |---|---|
-| ⚡ **Real-time Code Sync** | Every keystroke syncs instantly to all collaborators via WebSockets |
-| 🖱️ **Live Cursor Presence** | See every collaborator's cursor with a unique colored name label |
-| 💬 **Live Chat** | Built-in chat panel with Enter-to-send, auto-scroll to latest message |
-| ▶️ **Code Execution** | Run C++, Python, JavaScript, Java directly in the browser |
-| � **User Presence** | See who's online in the room in real time |
+| **Real-time Code Sync** | Every keystroke syncs instantly to all collaborators via WebSockets |
+| **Live Cursor Presence** | See every collaborator's cursor with a unique colored name label |
+| **Live Chat** | Built-in chat panel with Enter-to-send, auto-scroll to latest message |
+| **Code Execution** | Run C++, Python, JavaScript, Java directly in the browser |
+| **User Presence** | See who is online in the room in real time |
 
 ### Auth & Security
 | Feature | Description |
 |---|---|
-| 🔐 **JWT Authentication** | Signup/Login with bcrypt password hashing, 7-day token expiry |
-| 🛡️ **JWT Middleware** | All protected routes verified server-side — unauthorized requests get 401 |
-| 🔒 **Secure by Default** | `crypto.randomBytes` for room IDs, input validation on all endpoints |
+| **JWT Authentication** | Signup/Login with bcrypt password hashing, 7-day token expiry |
+| **JWT Middleware** | All protected routes verified server-side — unauthorized requests blocked with 401 |
+| **Secure Room IDs** | `crypto.randomBytes` for collision-safe room ID generation |
+| **Input Validation** | All auth endpoints validate required fields before hitting the DB |
 
 ### Editor
 | Feature | Description |
 |---|---|
-| 🎨 **Monaco Editor** | VS Code's editor in the browser — syntax highlighting, bracket pairs, IntelliSense |
-| 🌙 **Multiple Themes** | VS Dark, VS Light, High Contrast |
-| 📝 **4 Languages** | C++ (17/20), Python 3, JavaScript (Node.js), Java 21 |
-| � **Local Persistence** | Code saved to localStorage per room + language |
+| **Monaco Editor** | VS Code's editor engine — syntax highlighting, bracket pairs, IntelliSense |
+| **Multiple Themes** | VS Dark, VS Light, High Contrast |
+| **4 Languages** | C++ (C++17/20), Python 3, JavaScript (Node.js), Java 21 |
+| **Local Code Cache** | Code saved to localStorage per room and language |
 
 ### UX
 | Feature | Description |
 |---|---|
-| 🖥️ **VS Code Layout** | Full-screen IDE layout — no page scroll, everything visible |
-| 📥 **Custom Input (stdin)** | Provide program input before running — side by side with output |
-| 📜 **Room History** | Profile page shows all rooms joined with rejoin button |
-| 🔗 **Invite Links** | One-click copy of room link — friends join directly |
+| **VS Code Layout** | Full-screen IDE layout — no page scroll, everything visible at once |
+| **Custom Input (stdin)** | Provide program input before running, side by side with output |
+| **Room History** | Profile page shows all rooms joined with a rejoin button |
+| **Invite Links** | One-click copy of room link — friends join directly |
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 | Technology | Version | Purpose |
 |---|---|---|
 | React | 19 | UI framework |
-| Vite | 8 | Build tool & dev server |
+| Vite | 8 | Build tool and dev server |
 | Monaco Editor | `@monaco-editor/react` | Code editor (VS Code engine) |
 | Socket.IO Client | 4 | Real-time WebSocket communication |
 | React Router | 7 | Client-side routing |
@@ -106,116 +107,116 @@ Think of it as a lightweight **Google Docs for code**, with a built-in code runn
 | Express | 5 | Web framework |
 | Socket.IO | 4 | WebSocket server for real-time events |
 | Mongoose | 9 | MongoDB ODM |
-| jsonwebtoken | 9 | JWT generation & verification |
+| jsonwebtoken | 9 | JWT generation and verification |
 | bcryptjs | 3 | Password hashing |
-| child_process | built-in | Code execution via local compilers |
+| child_process | built-in | Code execution via system compilers |
 
-### Database & Storage
+### Database and Storage
 | Technology | Purpose |
 |---|---|
 | MongoDB Atlas | Cloud database — users, rooms, room history |
-| localStorage | Per-browser code & recent rooms cache |
+| localStorage | Per-browser code and recent rooms cache |
 
-### DevOps & Deployment
+### DevOps and Deployment
 | Technology | Purpose |
 |---|---|
 | Docker | Containerizes backend with g++, Python 3, Java pre-installed |
 | Render | Hosts backend Docker container (free tier) |
 | Vercel | Hosts React frontend (free tier) |
 | MongoDB Atlas | Cloud MongoDB M0 free cluster (AWS Mumbai) |
-| GitHub | Source control + auto-deploy trigger for both Render and Vercel |
+| GitHub | Source control + auto-deploy trigger for Render and Vercel |
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 Browser (React + Vite)
-    │
-    ├── HTTP (Axios + JWT)  ──────────────►  Express REST API
-    │                                             │
-    └── WebSocket (Socket.IO) ──────────────►  Socket.IO Server
-                                                  │
-                                            ┌─────┴──────┐
-                                            │            │
-                                       MongoDB        Code Execution
-                                       Atlas          (child_process)
-                                                      g++ / python3
-                                                      node / java
+    |
+    |-- HTTP (Axios + JWT)  ------------>  Express REST API
+    |                                            |
+    |-- WebSocket (Socket.IO) ---------->  Socket.IO Server
+                                                 |
+                                         +-------+-------+
+                                         |               |
+                                    MongoDB Atlas   Code Execution
+                                                    (child_process)
+                                                    g++ / python3
+                                                    node / java
 ```
 
 ### Socket.IO Events
 | Event | Direction | Description |
 |---|---|---|
-| `join-room` | Client → Server | User joins a room |
-| `users-update` | Server → Room | Updated list of connected users |
-| `code-change` | Client → Server | Editor content changed |
-| `code-update` | Server → Others | Broadcast code to other users |
-| `cursor-move` | Client → Server | Cursor position changed |
-| `cursor-update` | Server → Others | Broadcast cursor to others |
-| `cursor-remove` | Server → Others | User disconnected, remove cursor |
-| `send-message` | Client → Server | Chat message sent |
-| `receive-message` | Server → Room | Broadcast message to room |
+| `join-room` | Client to Server | User joins a room |
+| `users-update` | Server to Room | Updated list of connected users |
+| `code-change` | Client to Server | Editor content changed |
+| `code-update` | Server to Others | Broadcast code to other users |
+| `cursor-move` | Client to Server | Cursor position changed |
+| `cursor-update` | Server to Others | Broadcast cursor to others |
+| `cursor-remove` | Server to Others | User disconnected, remove cursor |
+| `send-message` | Client to Server | Chat message sent |
+| `receive-message` | Server to Room | Broadcast message to room |
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 CodeSync/
-│
-├── client/                          # React + Vite frontend
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── CodeEditor.jsx       # Monaco editor + live cursors
-│   │   │   ├── ChatPanel.jsx        # Real-time chat
-│   │   │   ├── UsersPanel.jsx       # Connected users list
-│   │   │   ├── Navbar.jsx           # Room navbar
-│   │   │   ├── ProtectedRoute.jsx   # Auth guard
-│   │   │   └── RoomEntry.jsx        # Login gate for room URLs
-│   │   ├── pages/
-│   │   │   ├── Home.jsx             # Landing page
-│   │   │   ├── Room.jsx             # Main editor room
-│   │   │   ├── Login.jsx            # Login page
-│   │   │   ├── Signup.jsx           # Signup page
-│   │   │   └── Profile.jsx          # Profile + room history
-│   │   ├── services/
-│   │   │   ├── api.js               # Axios instance + JWT interceptor
-│   │   │   └── auth.js              # Login/signup helpers
-│   │   └── styles/
-│   │       ├── room.css             # IDE layout styles
-│   │       ├── auth.css             # Login/Signup styles
-│   │       └── profile.css          # Profile page styles
-│   └── package.json
-│
-└── server/                          # Node.js + Express backend
-    ├── middleware/
-    │   └── authMiddleware.js        # JWT verification middleware
-    ├── controllers/
-    │   ├── authController.js        # Signup, Login
-    │   ├── roomController.js        # CRUD for rooms
-    │   ├── codeController.js        # Code execution engine
-    │   └── roomHistoryController.js # Room visit history
-    ├── models/
-    │   ├── User.js                  # User schema
-    │   ├── Room.js                  # Room schema
-    │   └── RoomHistory.js           # History schema
-    ├── routes/
-    │   ├── authRoutes.js            # /auth/signup, /auth/login
-    │   ├── roomRoutes.js            # /rooms/* (protected)
-    │   ├── codeRoutes.js            # /code/run (protected)
-    │   └── roomHistoryRoutes.js     # /room-history/* (protected)
-    ├── socket/
-    │   └── socketHandler.js        # All Socket.IO event handlers
-    ├── config/
-    │   └── db.js                   # MongoDB connection
-    ├── Dockerfile                  # Docker with compilers
-    └── package.json
+|
+|-- client/                          # React + Vite frontend
+|   |-- src/
+|   |   |-- components/
+|   |   |   |-- CodeEditor.jsx       # Monaco editor + live cursors
+|   |   |   |-- ChatPanel.jsx        # Real-time chat
+|   |   |   |-- UsersPanel.jsx       # Connected users list
+|   |   |   |-- Navbar.jsx           # Room navbar
+|   |   |   |-- ProtectedRoute.jsx   # Auth guard
+|   |   |   |-- RoomEntry.jsx        # Login gate for room URLs
+|   |   |-- pages/
+|   |   |   |-- Home.jsx             # Landing page
+|   |   |   |-- Room.jsx             # Main editor room
+|   |   |   |-- Login.jsx            # Login page
+|   |   |   |-- Signup.jsx           # Signup page
+|   |   |   |-- Profile.jsx          # Profile + room history
+|   |   |-- services/
+|   |   |   |-- api.js               # Axios instance + JWT interceptor
+|   |   |   |-- auth.js              # Login/signup helpers
+|   |   |-- styles/
+|   |       |-- room.css             # IDE layout styles
+|   |       |-- auth.css             # Login/Signup styles
+|   |       |-- profile.css          # Profile page styles
+|   |-- package.json
+|
+|-- server/                          # Node.js + Express backend
+    |-- middleware/
+    |   |-- authMiddleware.js        # JWT verification middleware
+    |-- controllers/
+    |   |-- authController.js        # Signup, Login
+    |   |-- roomController.js        # CRUD for rooms
+    |   |-- codeController.js        # Code execution engine
+    |   |-- roomHistoryController.js # Room visit history
+    |-- models/
+    |   |-- User.js                  # User schema
+    |   |-- Room.js                  # Room schema
+    |   |-- RoomHistory.js           # History schema
+    |-- routes/
+    |   |-- authRoutes.js            # /auth/signup, /auth/login (public)
+    |   |-- roomRoutes.js            # /rooms/* (protected)
+    |   |-- codeRoutes.js            # /code/run (protected)
+    |   |-- roomHistoryRoutes.js     # /room-history/* (protected)
+    |-- socket/
+    |   |-- socketHandler.js         # All Socket.IO event handlers
+    |-- config/
+    |   |-- db.js                    # MongoDB connection
+    |-- Dockerfile                   # Docker image with compilers
+    |-- package.json
 ```
 
 ---
 
-## ⚙️ Local Setup
+## Local Setup
 
 ### Prerequisites
 - Node.js 18+
@@ -266,7 +267,7 @@ docker-compose up --build
 
 ---
 
-## 🚢 Deployment
+## Deployment
 
 | Service | URL | Purpose |
 |---|---|---|
@@ -277,7 +278,7 @@ docker-compose up --build
 ### Environment Variables on Render
 ```
 MONGO_URI      = mongodb+srv://...
-JWT_SECRET     = <long random string>
+JWT_SECRET     = your_long_random_secret
 PORT           = 3000
 CLIENT_URL     = https://code-sync-jnzj.vercel.app
 ```
@@ -289,32 +290,19 @@ VITE_BACKEND_URL = https://codesync-backend-gur0.onrender.com
 
 ---
 
-## 📸 Screenshots
-
-### 🏠 Home Page
-<img src="screenshots/home.png" width="900">
-
-### 🚪 Room — Live Collaboration
-<img src="screenshots/room.png" width="900">
-
-### 💬 Chat
-<img src="screenshots/chat.png" width="900">
-
----
-
-## � Security
+## Security
 
 - Passwords hashed with **bcryptjs** (salt rounds: 10)
 - JWT tokens expire after **7 days**
 - All protected routes verified server-side with **JWT middleware**
 - Room IDs generated with **crypto.randomBytes** (collision-safe)
 - Input validation on all auth endpoints
-- CORS restricted to known frontend origins
-- Code execution sandboxed with **10-second timeout** + **500KB output limit**
+- CORS restricted to known frontend origins only
+- Code execution sandboxed with **10-second timeout** and **500KB output limit**
 
 ---
 
-## 🚀 Future Improvements
+## Future Improvements
 
 - [ ] Room code persistence in MongoDB (survive browser refresh)
 - [ ] Operational Transform / CRDT for conflict-free concurrent edits
@@ -326,7 +314,7 @@ VITE_BACKEND_URL = https://codesync-backend-gur0.onrender.com
 
 ---
 
-## �👨‍💻 Author
+## Author
 
 **Harsh Sharma**
 - GitHub: [@Harsh-128](https://github.com/Harsh-128)
@@ -335,8 +323,8 @@ VITE_BACKEND_URL = https://codesync-backend-gur0.onrender.com
 
 <div align="center">
 
-If you found this useful, give it a ⭐ on GitHub!
+If you found this useful, give it a star on GitHub!
 
-**[⭐ Star on GitHub](https://github.com/Harsh-128/CodeSync)**
+**[Star on GitHub](https://github.com/Harsh-128/CodeSync)**
 
 </div>
