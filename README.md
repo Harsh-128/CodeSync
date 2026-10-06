@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="assets/banner.png" alt="CodeSync Banner" width="100%">
-
 # CodeSync
 
 ### Real-Time Collaborative Code Editor
