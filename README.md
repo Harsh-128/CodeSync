@@ -2,183 +2,177 @@
   <img src="assets/banner.png" alt="CodeSync Banner" width="100%">
 </div>
 
-<p align="center">
+<div align="center">
+
+# CodeSync
+
+### Real-time Collaborative Code Editor
+
+**[🔗 Live Demo](https://code-sync-jnzj.vercel.app)** &nbsp;|&nbsp; **[📦 Backend API](https://codesync-backend-gur0.onrender.com/api/health)**
+
+<p>
   <img src="https://img.shields.io/github/stars/Harsh-128/CodeSync?style=for-the-badge" alt="Stars"/>
   <img src="https://img.shields.io/github/forks/Harsh-128/CodeSync?style=for-the-badge" alt="Forks"/>
   <img src="https://img.shields.io/github/issues/Harsh-128/CodeSync?style=for-the-badge" alt="Issues"/>
   <img src="https://img.shields.io/github/last-commit/Harsh-128/CodeSync?style=for-the-badge" alt="Last Commit"/>
 </p>
 
-##   🚀 About CodeSync
-
-CodeSync is a full-stack real-time collaborative code editor that enables multiple developers to create secure rooms, write code together, communicate through live chat, and execute code from a shared workspace. It demonstrates real-time communication using Socket.IO and follows the MERN stack architecture.
-
-Built using **React, Node.js, Express, Socket.IO and MongoDB**.
-
-</div>
-
----
-
-<div align="center">
-
-![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-22-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
-![Socket.IO](https://img.shields.io/badge/Socket.IO-010101?style=for-the-badge&logo=socketdotio&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![Socket.IO](https://img.shields.io/badge/Socket.IO-4-010101?style=for-the-badge&logo=socketdotio&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 </div>
 
-> A real-time collaborative code editor built using the MERN Stack, allowing multiple users to write code together, communicate through live chat, and collaborate seamlessly.
+---
+
+## 🚀 Live Demo
+
+> **Try it now → [https://code-sync-jnzj.vercel.app](https://code-sync-jnzj.vercel.app)**
+
+1. Sign up for a free account
+2. Create a room or join with a Room ID
+3. Share the room link with a friend
+4. Code together in real-time!
 
 ---
 
-## 📌 Features
+## ✨ Features
 
-- 👥 Create and Join Collaboration Rooms
-- 💻 Real-time Collaborative Code Editor
-- 💬 Live Chat using Socket.IO
-- 👨‍💻 Multiple Users in the Same Room
-- ✨ Syntax Highlighting
-- 📋 Copy Room ID
-- 🚪 Leave Room Functionality
-- 🔐 JWT Authentication
-- 🗄 MongoDB Database Integration
-- ⚡ Real-time Code Synchronization
-- ▶️ Code Execution
-- 📁 File Upload Support
-- 📱 Responsive User Interface
+| Feature | Description |
+|---|---|
+| 👥 **Live Collaboration** | Multiple users code in the same room simultaneously |
+| ⚡ **Real-time Sync** | Code changes sync instantly via Socket.IO WebSockets |
+| 🖱️ **Live Cursors** | See every collaborator's cursor with colored name labels |
+| ▶️ **Code Execution** | Run C++, Python, JavaScript, Java directly in the browser |
+| 💬 **Live Chat** | Built-in chat panel with Enter-to-send |
+| 🔐 **JWT Auth** | Secure signup/login with 7-day token expiry |
+| 🎨 **VS Code Layout** | Monaco editor with themes, syntax highlighting, bracket pairs |
+| 📱 **Invite Links** | Share room links — friends join with one click |
+| 📜 **Execution History** | Last 10 runs saved per room |
+| 🌙 **Dark IDE Theme** | Full-screen IDE layout, no scrolling |
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Category | Technologies |
-|----------|--------------|
-| Frontend | React, Vite, HTML, CSS, JavaScript |
-| Backend | Node.js, Express.js |
-| Database | MongoDB |
-| Real-Time | Socket.IO |
-| Authentication | JWT |
-| Version Control | Git, GitHub |
+| Layer | Technology |
+|---|---|
+| **Frontend** | React 19, Vite 8, Monaco Editor, Socket.IO Client |
+| **Backend** | Node.js 22, Express 5, Socket.IO 4 |
+| **Database** | MongoDB Atlas (Mongoose) |
+| **Auth** | JWT (jsonwebtoken), bcryptjs |
+| **Execution** | Local compilers — g++ (C++17), Python 3, Java 21, Node.js |
+| **Deployment** | Vercel (frontend), Render Docker (backend), MongoDB Atlas |
 
 ---
 
 ## 📂 Project Structure
 
-```text
+```
 CodeSync/
-├── client/
-│   ├── public/
+├── client/                  # React + Vite frontend
 │   ├── src/
+│   │   ├── components/      # Navbar, CodeEditor, ChatPanel, UsersPanel...
+│   │   ├── pages/           # Home, Room, Login, Signup, Profile
+│   │   ├── services/        # API (axios), Auth helpers
+│   │   └── styles/          # room.css, auth.css
 │   └── package.json
 │
-├── server/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── middleware/
-│   ├── sockets/
-│   └── package.json
-│
-├── .gitignore
-└── README.md
+└── server/                  # Node.js + Express backend
+    ├── controllers/         # auth, room, code execution, history
+    ├── models/              # User, Room, RoomHistory (Mongoose)
+    ├── routes/              # authRoutes, roomRoutes, codeRoutes...
+    ├── socket/              # socketHandler (real-time events)
+    ├── Dockerfile           # Docker with g++, python3, java
+    └── package.json
 ```
 
 ---
 
-## ⚙️ Installation
+## ⚙️ Local Setup
 
-### Clone Repository
+### Prerequisites
+- Node.js 18+
+- MongoDB (local) or MongoDB Atlas URI
+- g++ (for C++ execution)
+- Python 3
+- Java JDK
+
+### Clone & Install
 
 ```bash
 git clone https://github.com/Harsh-128/CodeSync.git
-```
-
-```bash
 cd CodeSync
+
+# Install server dependencies
+cd server && npm install
+
+# Install client dependencies
+cd ../client && npm install
 ```
 
-### Install Client
+### Configure Environment
 
-```bash
-cd client
-npm install
-```
-
-### Install Server
-
-```bash
-cd ../server
-npm install
-```
-
-### Configure Environment Variables
-
-Create a `.env` file inside the `server` folder.
+Create `server/.env` (copy from `server/.env.example`):
 
 ```env
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
+MONGO_URI=mongodb://127.0.0.1:27017/codesync
+JWT_SECRET=your_long_random_secret_here
+PORT=3000
+CLIENT_URL=http://localhost:5173
 ```
 
-### Start Backend
+### Run Locally
 
 ```bash
-cd server
-npm run dev
+# Terminal 1 — Backend
+cd server && npm run dev
+
+# Terminal 2 — Frontend
+cd client && npm run dev
 ```
 
-### Start Frontend
-
-```bash
-cd client
-npm start
-```
+Open **http://localhost:5173**
 
 ---
 
-## 📸 Project Screenshots
+## 🚢 Deployment
+
+| Service | Purpose | URL |
+|---|---|---|
+| Vercel | Frontend hosting | https://code-sync-jnzj.vercel.app |
+| Render | Backend (Docker) | https://codesync-backend-gur0.onrender.com |
+| MongoDB Atlas | Database | AWS Mumbai |
+
+> **Note:** Render free tier sleeps after 15 min of inactivity. First request after sleep takes ~30s to wake up.
+
+---
+
+## 📸 Screenshots
 
 ### 🏠 Home Page
-
 <img src="screenshots/home.png" width="900">
 
----
-
-### 🚪 Create / Join Room
-
+### 🚪 Room — Live Collaboration
 <img src="screenshots/room.png" width="900">
 
----
-
-### 💬 Live Chat
-
+### 💬 Chat
 <img src="screenshots/chat.png" width="900">
-
----
-
-## 🚀 Future Improvements
-
-- Voice Chat
-- Video Calling
-- AI Code Suggestions
-- Collaborative Whiteboard
-- Multiple Programming Languages
-- Theme Customization
 
 ---
 
 ## 👨‍💻 Author
 
 **Harsh Sharma**
-
-- GitHub: https://github.com/Harsh-128
+- GitHub: [@Harsh-128](https://github.com/Harsh-128)
 
 ---
 
-## ⭐ Support
+<div align="center">
 
-If you like this project, please give it a ⭐ on GitHub.
+If you found this useful, please give it a ⭐ on GitHub!
+
+</div>
