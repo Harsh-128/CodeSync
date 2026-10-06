@@ -33,14 +33,18 @@ connectDB();
 
 // Middleware
 const allowedOrigin = process.env.CLIENT_URL || "http://localhost:5173";
-// Support multiple origins (local + production)
 const allowedOrigins = allowedOrigin.split(",").map(o => o.trim());
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (mobile apps, curl, etc.)
+        // Allow requests with no origin (mobile, curl, Render health checks)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.some(o => origin.startsWith(o))) {
+        // Allow any vercel.app subdomain + localhost
+        if (
+            origin.includes("vercel.app") ||
+            origin.includes("localhost") ||
+            allowedOrigins.some(o => origin === o)
+        ) {
             return callback(null, true);
         }
         return callback(new Error("Not allowed by CORS"));
@@ -78,7 +82,11 @@ const io = new Server(server, {
     cors: {
         origin: (origin, callback) => {
             if (!origin) return callback(null, true);
-            if (allowedOrigins.some(o => origin.startsWith(o))) {
+            if (
+                origin.includes("vercel.app") ||
+                origin.includes("localhost") ||
+                allowedOrigins.some(o => origin === o)
+            ) {
                 return callback(null, true);
             }
             return callback(new Error("Not allowed by CORS"));
