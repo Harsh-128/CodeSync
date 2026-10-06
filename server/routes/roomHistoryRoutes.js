@@ -1,16 +1,10 @@
 const express = require("express");
-
 const router = express.Router();
+const { protect } = require("../middleware/authMiddleware");
+const { saveRoomHistory, getRoomHistory } = require("../controllers/roomHistoryController");
 
-const {
-    saveRoomHistory,
-    getRoomHistory,
-} = require("../controllers/roomHistoryController");
-
-// Save room history
-router.post("/save", saveRoomHistory);
-
-// Get room history by userId
-router.get("/:userId", getRoomHistory);
+// Both routes protected — users can only access their own history
+router.post("/save",       protect, saveRoomHistory);
+router.get("/:userId",     protect, getRoomHistory);
 
 module.exports = router;
