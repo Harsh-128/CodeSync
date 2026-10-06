@@ -1,64 +1,301 @@
-.profile-container {
+/* ============================================================
+   PROFILE PAGE
+============================================================ */
+
+.profile-page {
     min-height: 100vh;
-    background: #1e1e2f;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 30px;
+    background: #0d0d0d;
+    color: #d4d4d4;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    padding: 0;
 }
 
+/* ── Topbar ── */
+.profile-topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #1a1a2e;
+    border-bottom: 1px solid #2a2a3e;
+    padding: 0 24px;
+    height: 52px;
+}
+
+.profile-topbar .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    margin-right: auto;
+}
+
+.profile-topbar .brand-icon { color: #7c3aed; font-size: 20px; }
+.profile-topbar .brand span { color: #7c3aed; }
+
+.profile-topbar .topbar-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid #3a3a5e;
+    background: #252540;
+    color: #d4d4d4;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.profile-topbar .topbar-btn:hover { background: #2e2e50; color: #fff; }
+.profile-topbar .topbar-btn.danger { border-color: #5a1a1a; background: #2a1010; color: #f87171; }
+.profile-topbar .topbar-btn.danger:hover { background: #3a1515; }
+
+/* ── Content ── */
+.profile-content {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+/* ── User Card ── */
 .profile-card {
-    width: 420px;
-    background: #252526;
-    border-radius: 18px;
-    padding: 35px;
+    background: #111;
+    border: 1px solid #1e1e1e;
+    border-radius: 16px;
+    padding: 32px 24px;
     text-align: center;
-    color: white;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
 
-.avatar {
-    width: 90px;
-    height: 90px;
-    margin: auto;
+.profile-avatar {
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
-    background: #3b82f6;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
     display: flex;
-    justify-content: center;
     align-items: center;
-    font-size: 38px;
-    font-weight: bold;
-    margin-bottom: 20px;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 auto 16px;
 }
 
-.info {
+.profile-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 4px;
+}
+
+.profile-email {
+    font-size: 13px;
+    color: #555;
+    margin: 0 0 24px;
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.stat-box {
+    background: #1a1a1a;
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.stat-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: #a78bfa;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: #555;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.profile-info {
     text-align: left;
-    margin-top: 25px;
-}
-
-.info p {
-    margin: 12px 0;
-    font-size: 17px;
-}
-
-.profile-buttons {
+    border-top: 1px solid #1e1e1e;
+    padding-top: 20px;
     display: flex;
-    justify-content: space-between;
-    margin-top: 30px;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.profile-buttons button {
-    padding: 10px 18px;
+.profile-info-row {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.profile-info-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.profile-info-value {
+    font-size: 14px;
+    color: #d4d4d4;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.profile-actions button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.btn-home {
+    background: #252540;
+    color: #d4d4d4;
+    border: 1px solid #3a3a5e !important;
+}
+
+.btn-home:hover { background: #2e2e50; color: #fff; }
+
+.btn-logout {
+    background: #2a1010;
+    color: #f87171;
+    border: 1px solid #5a1a1a !important;
+}
+
+.btn-logout:hover { background: #3a1515; }
+
+/* ── Room History ── */
+.history-panel {
+    background: #111;
+    border: 1px solid #1e1e1e;
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.history-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.history-empty {
+    text-align: center;
+    color: #444;
+    font-size: 13px;
+    padding: 40px 0;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #1a1a1a;
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 12px 16px;
+    transition: border-color 0.15s;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.history-item:hover { border-color: #7c3aed; }
+
+.history-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.history-room-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: #252540;
+    border: 1px solid #3a3a5e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.history-room-id {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e0e0e0;
+}
+
+.history-room-meta {
+    font-size: 11px;
+    color: #555;
+    margin-top: 2px;
+}
+
+.history-lang-badge {
+    background: #1e1e2e;
+    border: 1px solid #3a3a5e;
+    color: #a78bfa;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+}
+
+.history-join-btn {
+    padding: 6px 14px;
+    background: #7c3aed;
+    color: #fff;
     border: none;
     border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
     cursor: pointer;
-    color: white;
+    transition: background 0.15s;
+    margin-left: 10px;
 }
 
-.back-btn {
-    background: #3b82f6;
-}
+.history-join-btn:hover { background: #6d28d9; }
 
-.logout-btn {
-    background: #ef4444;
+.history-loading {
+    text-align: center;
+    color: #444;
+    font-size: 13px;
+    padding: 30px 0;
 }

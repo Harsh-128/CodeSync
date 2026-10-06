@@ -79,6 +79,17 @@ function Room() {
                 replace: true,
                 state: { from: { pathname: `/room/${roomId}` } }
             });
+            return;
+        }
+
+        // Save this room to the user's history
+        if (user?._id || user?.id) {
+            API.post("/room-history/save", {
+                userId:   user._id || user.id,
+                username: username,
+                roomId:   roomId,
+                language: "cpp",
+            }).catch(() => {}); // silent — not critical
         }
     }, [navigate, roomId]);
 
